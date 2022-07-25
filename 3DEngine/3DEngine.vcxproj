@@ -129,6 +129,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\D3D11Core.h" />
+    <ClInclude Include="src\D3DUtil.h" />
     <ClInclude Include="src\EngineApp.h" />
     <ClInclude Include="src\Mouse.h" />
     <ClInclude Include="src\Keyboard.h" />
@@ -137,6 +139,7 @@
     <ClInclude Include="src\Timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\D3D11Core.cpp" />
     <ClCompile Include="src\EngineApp.cpp" />
     <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\Keyboard.cpp" />

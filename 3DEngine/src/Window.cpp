@@ -1,4 +1,7 @@
 #include "Window.h"
+#include "D3D11Core.h"
+
+#include <cassert>
 
 Window::WindowClass Window::WindowClass::m_WndClass;
 
@@ -64,7 +67,7 @@ Window::Window(const int width, const int height, const wchar_t* wndName)
 		WindowClass::GetInstance(),
 		this);
 
-	//m_D3D12App = std::make_unique<D3D12::D3D12Core>(m_HWnd, wr.right - wr.left, wr.bottom - wr.top);
+	m_D3D11App = std::make_unique<D3D11::D3D11Core>(m_HWnd, wr.right - wr.left, wr.bottom - wr.top);
 
 	ShowWindow(m_HWnd, SW_SHOWDEFAULT);
 
@@ -159,6 +162,13 @@ std::optional<int> Window::ProcessMessages() noexcept
 		DispatchMessage(&msg);
 	}
 	return {};
+}
+
+D3D11::D3D11Core& Window::Gfx()
+{
+	assert(m_D3D11App && "There must be a D3D11Core instance");
+
+	return *m_D3D11App;
 }
 
 LRESULT __stdcall Window::HandleMsgSetup(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

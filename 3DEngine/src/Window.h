@@ -9,6 +9,11 @@
 #include <stdexcept>
 #include <string>
 
+namespace D3D11
+{
+	class D3D11Core;
+}
+
 struct WindowExtent
 {
 	UINT wndWidth;
@@ -56,6 +61,7 @@ public:
 	void SetFullScreen(bool fullScreen);
 
 	static std::optional<int> ProcessMessages() noexcept;
+	D3D11::D3D11Core& Gfx();
 
 private:
 	static LRESULT WINAPI HandleMsgSetup(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -71,6 +77,8 @@ private:
 	bool			m_Fullscreen;
 
 public:
+	std::unique_ptr<D3D11::D3D11Core> m_D3D11App;
+
 	Keyboard	m_KeyBoard;
 	Mouse		m_Mouse;
 };

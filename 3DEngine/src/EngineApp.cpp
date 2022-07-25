@@ -1,4 +1,5 @@
 #include "EngineApp.h"
+#include "D3D11Core.h"
 
 namespace Engine
 {
@@ -57,6 +58,7 @@ namespace Engine
 
 	void EngineApp::Draw()
 	{
-		//m_Window.Gfx().Render();
+		m_Window.Gfx().BeginFrame(DirectX::Colors::Crimson);
+		m_Window.Gfx().EndFrame();
 	}
 }
