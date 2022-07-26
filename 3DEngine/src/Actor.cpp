@@ -15,7 +15,8 @@ void Actor::Draw(D3D11::D3D11Core& gfx) const noexcept(!_DEBUG)
 		b->Bind(gfx);
 	}
 
-	gfx.DrawIndexed(m_IndexBuffer->GetCount());
+	//gfx.DrawIndexed(m_IndexBuffer->GetCount());
+	gfx.DrawIndexed(m_Count);
 }
 
 void Actor::AddBind(std::unique_ptr<D3D11::Bindable> bind) noexcept(!_DEBUG)
@@ -32,3 +33,5 @@ void Actor::AddIndexBuffer(std::unique_ptr<D3D11::IndexBuffer> ibuf) noexcept
 	m_IndexBuffer = ibuf.get();
 	m_Binds.push_back(std::move(ibuf));
 }
+
+size_t Actor::m_Count = 0;

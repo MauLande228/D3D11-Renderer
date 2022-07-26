@@ -1,9 +1,9 @@
-#include "Box.h"
+#include "Sphere.h"
 #include "../BindableBase.h"
 
 using namespace D3D11;
 
-Box::Box(D3D11Core& gfx,
+Sphere::Sphere(D3D11Core& gfx,
 	std::mt19937& rng,
 	std::uniform_real_distribution<float>& adist,
 	std::uniform_real_distribution<float>& ddist,
@@ -23,14 +23,14 @@ Box::Box(D3D11Core& gfx,
 {
 	if (!IsStaticInitialized())
 	{
-		auto geo = m_GeoGen.CreateBox(2, 2, 2, 1);
+		auto geo = m_GeoGen.CreateSphere(2, 50, 50);
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, geo.vertices));
 
-		auto pvs = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
+		auto pvs = std::make_unique<VertexShader>(gfx, L"SphereVS.cso");
 		auto pvsbc = pvs->GetByteCode();
 		AddStaticBind(std::move(pvs));
 
-		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelShader.cso"));
+		AddStaticBind(std::make_unique<PixelShader>(gfx, L"SpherePS.cso"));
 
 		auto ib = std::make_unique<IndexBuffer>(gfx, geo.GetIndices16());
 		m_Count = ib->GetCount();
@@ -74,7 +74,7 @@ Box::Box(D3D11Core& gfx,
 	AddBind(std::make_unique<Transform>(gfx, *this));
 }
 
-void Box::Update(float dt) noexcept
+void Sphere::Update(float dt) noexcept
 {
 	roll += droll * dt;
 	pitch += dpitch * dt;
@@ -84,7 +84,7 @@ void Box::Update(float dt) noexcept
 	chi += dchi * dt;
 }
 
-DirectX::XMMATRIX Box::GetTransform() const noexcept
+DirectX::XMMATRIX Sphere::GetTransform() const noexcept
 {
 	return DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
 		DirectX::XMMatrixTranslation(r, 0.0f, 0.0f) *

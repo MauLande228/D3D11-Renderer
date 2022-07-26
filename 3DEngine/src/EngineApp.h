@@ -1,6 +1,10 @@
 #include "Window.h"
 #include "Timer.h"
 #include "Primitives/Box.h"
+#include "Primitives/Sphere.h"
+#include "Actor.h"
+
+constexpr float PI = 3.14159265f;
 
 namespace Engine
 {
@@ -29,6 +33,7 @@ namespace Engine
 		Window		m_Window{ 800, 600, L"D3D12 Renderer" };
 		Timer		m_Timer{};
 
-		std::vector<std::unique_ptr<Box>> m_Boxes;
+		std::vector<std::unique_ptr<Actor>> m_Actors;
+		static constexpr size_t nActors = 80;
 	};
 }
