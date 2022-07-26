@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\ActorBase.h" />
     <ClInclude Include="src\BindableBase.h" />
     <ClInclude Include="src\Primitives\Box.h" />
     <ClInclude Include="src\Actor.h" />

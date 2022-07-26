@@ -16,6 +16,9 @@ class Actor
 public:
 	using id_t = uint32_t;
 
+	template<class T>
+	friend class ActorBase;
+
 	Actor() = default;
 	Actor(const Actor&) = delete;
 	virtual ~Actor() = default;
@@ -25,11 +28,15 @@ public:
 	virtual void Update(float dt) noexcept = 0;
 	void Draw(D3D11::D3D11Core& gfx) const noexcept(!_DEBUG);
 
+protected:
 	void AddBind(std::unique_ptr<D3D11::Bindable> bind) noexcept(!_DEBUG);
 	void AddIndexBuffer(std::unique_ptr<D3D11::IndexBuffer> ibuf) noexcept;
 
 private:
-	const D3D11::IndexBuffer*								m_IndexBuffer = nullptr;
+	virtual const std::vector<std::unique_ptr<D3D11::Bindable>>& GetStaticBinds() const noexcept = 0;
+
+private:
+	const D3D11::IndexBuffer*						m_IndexBuffer = nullptr;
 	std::vector<std::unique_ptr<D3D11::Bindable>>	m_Binds;
 
 	id_t m_ID;

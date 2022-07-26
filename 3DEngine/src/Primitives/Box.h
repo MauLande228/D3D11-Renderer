@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Actor.h"
+#include "../ActorBase.h"
 
 #include <random>
 
-class Box : public Actor
+class Box : public ActorBase<Box>
 {
 public:
 	Box(D3D11::D3D11Core& gfx, std::mt19937& rng,

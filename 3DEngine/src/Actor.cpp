@@ -10,6 +10,11 @@ void Actor::Draw(D3D11::D3D11Core& gfx) const noexcept(!_DEBUG)
 	{
 		b->Bind(gfx);
 	}
+	for (auto& b : GetStaticBinds())
+	{
+		b->Bind(gfx);
+	}
+
 	gfx.DrawIndexed(m_IndexBuffer->GetCount());
 }
 
