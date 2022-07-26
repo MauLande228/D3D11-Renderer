@@ -23,14 +23,17 @@ Sphere::Sphere(D3D11Core& gfx,
 {
 	if (!IsStaticInitialized())
 	{
-		auto geo = m_GeoGen.CreateSphere(2, 50, 50);
+		auto geo = m_GeoGen.CreateSphere(2, 20, 20);
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, geo.vertices));
 
-		auto pvs = std::make_unique<VertexShader>(gfx, L"SphereVS.cso");
+		AddStaticBind(std::make_unique<Texture>(gfx, "textures/brick.png"));
+		AddStaticBind(std::make_unique<Sampler>(gfx));
+
+		auto pvs = std::make_unique<VertexShader>(gfx, L"TextureVS.cso");
 		auto pvsbc = pvs->GetByteCode();
 		AddStaticBind(std::move(pvs));
 
-		AddStaticBind(std::make_unique<PixelShader>(gfx, L"SpherePS.cso"));
+		AddStaticBind(std::make_unique<PixelShader>(gfx, L"TexturePS.cso"));
 
 		auto ib = std::make_unique<IndexBuffer>(gfx, geo.GetIndices16());
 		m_Count = ib->GetCount();
@@ -57,7 +60,7 @@ Sphere::Sphere(D3D11Core& gfx,
 				{ 0.0f,1.0f,1.0f },
 			}
 		};
-		AddStaticBind(std::make_unique<PixelConstantBuffer<ConstantBuffer2>>(gfx, cb2));
+		//AddStaticBind(std::make_unique<PixelConstantBuffer<ConstantBuffer2>>(gfx, cb2));
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
 		{
