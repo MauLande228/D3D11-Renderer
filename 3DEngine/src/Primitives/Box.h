@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../ActorBase.h"
+#include "../Geometry.h"
 
 #include <random>
 
@@ -32,4 +33,6 @@ private:
 	float dtheta;
 	float dphi;
 	float dchi;
+
+	Geometry m_GeoGen;
 };

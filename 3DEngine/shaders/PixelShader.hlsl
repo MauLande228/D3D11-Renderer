@@ -3,7 +3,13 @@ cbuffer CBuf
     float4 face_colors[6];
 };
 
-float4 main(uint tid : SV_PrimitiveID) : SV_Target
+struct VsOut
 {
-    return face_colors[tid / 2];
+    float4 posH : SV_Position;
+    float4 color : COLOR;
+};
+
+float4 main(VsOut pin) : SV_Target
+{
+    return pin.color;
 }
