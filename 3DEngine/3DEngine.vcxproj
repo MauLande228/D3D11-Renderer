@@ -129,6 +129,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\BindableBase.h" />
+    <ClInclude Include="src\Primitives\Box.h" />
+    <ClInclude Include="src\Actor.h" />
+    <ClInclude Include="src\PixelShader.h" />
+    <ClInclude Include="src\InputLayout.h" />
+    <ClInclude Include="src\IndexBuffer.h" />
+    <ClInclude Include="src\Bindable.h" />
+    <ClInclude Include="src\ConstantBuffers.h" />
     <ClInclude Include="src\D3D11Core.h" />
     <ClInclude Include="src\D3DUtil.h" />
     <ClInclude Include="src\EngineApp.h" />
@@ -137,8 +145,18 @@
     <ClInclude Include="src\WinUtils.h" />
     <ClInclude Include="src\Window.h" />
     <ClInclude Include="src\Timer.h" />
+    <ClInclude Include="src\Topology.h" />
+    <ClInclude Include="src\Transform.h" />
+    <ClInclude Include="src\VertexBuffer.h" />
+    <ClInclude Include="src\VertexShader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Primitives\Box.cpp" />
+    <ClCompile Include="src\Actor.cpp" />
+    <ClCompile Include="src\PixelShader.cpp" />
+    <ClCompile Include="src\InputLayout.cpp" />
+    <ClCompile Include="src\IndexBuffer.cpp" />
+    <ClCompile Include="src\Bindable.cpp" />
     <ClCompile Include="src\D3D11Core.cpp" />
     <ClCompile Include="src\EngineApp.cpp" />
     <ClCompile Include="src\Mouse.cpp" />
@@ -146,6 +164,32 @@
     <ClCompile Include="src\Window.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\WinMain.cpp" />
+    <ClCompile Include="src\Topology.cpp" />
+    <ClCompile Include="src\Transform.cpp" />
+    <ClCompile Include="src\VertexBuffer.cpp" />
+    <ClCompile Include="src\VertexShader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="shaders\PixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="shaders\VertexShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

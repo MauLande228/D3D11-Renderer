@@ -7,6 +7,7 @@ namespace D3D11
 {
 	class D3D11Core
 	{
+		friend class Bindable;
 
 #ifdef NDEBUG
 		const bool debugLayers = false;

@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "Timer.h"
+#include "Primitives/Box.h"
 
 namespace Engine
 {
@@ -15,7 +16,7 @@ namespace Engine
 		void CalculateFrameStats();
 
 	public:
-		EngineApp() {}
+		EngineApp();
 		EngineApp(const EngineApp&) = delete;
 		EngineApp(const EngineApp&&) = delete;
 		EngineApp& operator=(const EngineApp&) = delete;
@@ -27,5 +28,7 @@ namespace Engine
 	private:
 		Window		m_Window{ 800, 600, L"D3D12 Renderer" };
 		Timer		m_Timer{};
+
+		std::vector<std::unique_ptr<Box>> m_Boxes;
 	};
 }
