@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "D3D11Core.h"
+#include "../imgui/imgui_impl_win32.h"
 
 #include <cassert>
 
@@ -67,14 +68,16 @@ Window::Window(const int width, const int height, const wchar_t* wndName)
 		WindowClass::GetInstance(),
 		this);
 
-	m_D3D11App = std::make_unique<D3D11::D3D11Core>(m_HWnd, wr.right - wr.left, wr.bottom - wr.top);
 
 	ShowWindow(m_HWnd, SW_SHOWDEFAULT);
+	ImGui_ImplWin32_Init(m_HWnd);
+	m_D3D11App = std::make_unique<D3D11::D3D11Core>(m_HWnd, width, height);
 
 }
 
 Window::~Window()
 {
+	ImGui_ImplWin32_Shutdown();
 	DestroyWindow(m_HWnd);
 }
 
@@ -189,33 +192,49 @@ LRESULT __stdcall Window::HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 	return pWnd->WndProc(hWnd, uMsg, wParam, lParam);
 }
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 LRESULT Window::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+		return true;
+
+	const auto io = ImGui::GetIO();
+
 	switch (uMsg)
 	{
 	case WM_CLOSE:
 		PostQuitMessage(0);
 		return 0;
 
+	/*case WM_ACTIVATE:
+		// confine/free cursor on window to foreground/background if cursor disabled
+		if (!cursorEnabled)
+		{
+			if (wParam & WA_ACTIVE)
+			{
+				ConfineCursor();
+				HideCursor();
+			}
+			else
+			{
+				FreeCursor();
+				ShowCursor();
+			}
+		}
+		break;*/
+
+		/******************KEY MESSAGES*******************/
 	case WM_KILLFOCUS:
 		m_KeyBoard.ClearState();
 		break;
 
-	case WM_SIZE:
-	{
-		RECT clientRect = {};
-		::GetClientRect(m_HWnd, &clientRect);
-
-		int width = clientRect.right - clientRect.left;
-		int height = clientRect.bottom - clientRect.top;
-
-		//m_D3D12App->Resize(width, height);
-	}
-	break;
-
-	/*KEYBOARD MESSAGES*/
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:
+		if (io.WantCaptureKeyboard)
+		{
+			break;
+		}
+
 		if (!(lParam & 0x40000000) || m_KeyBoard.AutorepeatIsEnabled())
 		{
 			m_KeyBoard.OnKeyPressed(static_cast<unsigned char>(wParam));
@@ -224,21 +243,40 @@ LRESULT Window::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_KEYUP:
 	case WM_SYSKEYUP:
+		if (io.WantCaptureKeyboard)
+		{
+			break;
+		}
 		m_KeyBoard.OnKeyReleased(static_cast<unsigned char>(wParam));
 		break;
 
 	case WM_CHAR:
-
+		if (io.WantCaptureKeyboard)
+		{
+			break;
+		}
 		m_KeyBoard.OnChar(static_cast<unsigned char>(wParam));
 		break;
-		/*END KEYBOARD MESSAGES*/
 
-		/*MOUSE MESSAGES*/
+		/******************MOUSE MESSAGES*******************/
 	case WM_MOUSEMOVE:
 	{
+		/*if (!cursorEnabled)
+		{
+			if (!m_Mouse.IsInWindow())
+			{
+				SetCapture(hWnd);
+				m_Mouse.OnMouseEnter();
+				HideCursor();
+			}
+			break;
+		}*/
 
+		if (io.WantCaptureMouse)
+		{
+			break;
+		}
 		const POINTS pt = MAKEPOINTS(lParam);
-		// in client region -> log move, and log enter + capture mouse (if not previously in window)
 		if (pt.x >= 0 && pt.x < m_Width && pt.y >= 0 && pt.y < m_Height)
 		{
 			m_Mouse.OnMouseMove(pt.x, pt.y);
@@ -248,14 +286,13 @@ LRESULT Window::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				m_Mouse.OnMouseEnter();
 			}
 		}
-		// not in client -> log move / maintain capture if button down
+
 		else
-		{
+		{	//Anding the wParam and the button defs we can know if either of them is down
 			if (wParam & (MK_LBUTTON | MK_RBUTTON))
 			{
 				m_Mouse.OnMouseMove(pt.x, pt.y);
 			}
-			// button up -> release capture / log event for leaving
 			else
 			{
 				ReleaseCapture();
@@ -264,50 +301,64 @@ LRESULT Window::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	}
+
 	case WM_LBUTTONDOWN:
 	{
 		SetForegroundWindow(hWnd);
+		/*if (!cursorEnabled)
+		{
+			ConfineCursor();
+			HideCursor();
+		}*/
 
+		if (io.WantCaptureMouse)
+		{
+			break;
+		}
 		const POINTS pt = MAKEPOINTS(lParam);
-		m_Mouse.OnLeftPressed(pt.x, pt.y);
+		m_Mouse.OnMouseMove(pt.x, pt.y);
 		break;
 	}
+
 	case WM_RBUTTONDOWN:
 	{
-
+		if (io.WantCaptureMouse)
+		{
+			break;
+		}
 		const POINTS pt = MAKEPOINTS(lParam);
 		m_Mouse.OnRightPressed(pt.x, pt.y);
 		break;
 	}
+
 	case WM_LBUTTONUP:
 	{
-
+		if (io.WantCaptureMouse)
+		{
+			break;
+		}
 		const POINTS pt = MAKEPOINTS(lParam);
 		m_Mouse.OnLeftReleased(pt.x, pt.y);
-		// release mouse if outside of window
-		if (pt.x < 0 || pt.x >= m_Width || pt.y < 0 || pt.y >= m_Height)
-		{
-			ReleaseCapture();
-			m_Mouse.OnMouseLeave();
-		}
 		break;
 	}
+
 	case WM_RBUTTONUP:
 	{
-
+		if (io.WantCaptureMouse)
+		{
+			break;
+		}
 		const POINTS pt = MAKEPOINTS(lParam);
 		m_Mouse.OnRightReleased(pt.x, pt.y);
-		// release mouse if outside of window
-		if (pt.x < 0 || pt.x >= m_Width || pt.y < 0 || pt.y >= m_Height)
-		{
-			ReleaseCapture();
-			m_Mouse.OnMouseLeave();
-		}
 		break;
 	}
+
 	case WM_MOUSEWHEEL:
 	{
-
+		if (io.WantCaptureMouse)
+		{
+			break;
+		}
 		const POINTS pt = MAKEPOINTS(lParam);
 		const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
 		m_Mouse.OnWheelDelta(pt.x, pt.y, delta);

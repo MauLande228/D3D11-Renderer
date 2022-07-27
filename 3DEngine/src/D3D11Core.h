@@ -31,11 +31,17 @@ namespace D3D11
 		DirectX::XMMATRIX GetProjection() const noexcept;
 		DirectX::XMMATRIX GetView() const noexcept;
 
+		void EnableImgui() noexcept;
+		void DisableImgui() noexcept;
+		bool IsImguiEnabled() const noexcept;
+
 	private:
 		void CreateDeviceAndSwapChain(HWND hWnd, int width, int height);
 		void OnResize(int width, int height);
 
 	private:
+		bool m_bImguiEnabled = true;
+
 		UINT m_DebugFlags;
 
 		DirectX::XMMATRIX m_Projection;

@@ -2,6 +2,7 @@
 #include "Timer.h"
 #include "Primitives/Box.h"
 #include "Primitives/Sphere.h"
+#include "ImGuiManager.h"
 #include "Actor.h"
 
 constexpr float PI = 3.14159265f;
@@ -30,6 +31,8 @@ namespace Engine
 		void Draw();
 
 	private:
+		ImGuiManager m_ImGui{};
+
 		Window		m_Window{ 800, 600, L"D3D12 Renderer" };
 		Timer		m_Timer{};
 

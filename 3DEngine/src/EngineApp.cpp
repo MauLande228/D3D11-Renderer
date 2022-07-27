@@ -1,6 +1,7 @@
 #include "EngineApp.h"
 #include "D3D11Core.h"
 #include "stb_image.h"
+#include "../imgui/imgui.h"
 
 #include <algorithm>
 
@@ -115,6 +116,12 @@ namespace Engine
 		{
 			b->Update(m_Timer.DeltaTime());
 			b->Draw(m_Window.Gfx());
+		}
+
+		static bool show_demo_window = true;
+		if (show_demo_window)
+		{
+			ImGui::ShowDemoWindow(&show_demo_window);
 		}
 
 		m_Window.Gfx().EndFrame();

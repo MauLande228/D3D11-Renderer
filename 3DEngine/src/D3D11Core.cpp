@@ -1,4 +1,6 @@
 #include "D3D11Core.h"
+#include "../imgui/imgui_impl_dx11.h"
+#include "../imgui/imgui_impl_win32.h"
 
 namespace D3D11
 {
@@ -6,19 +8,34 @@ namespace D3D11
 	{
 		CreateDeviceAndSwapChain(hWnd, width, height);
 		OnResize(width, height);
+		ImGui_ImplDX11_Init(m_Device.Get(), m_DeviceContext.Get());
 	}
 
 	D3D11Core::~D3D11Core()
 	{
+		ImGui_ImplDX11_Shutdown();
 	}
 
 	void D3D11Core::EndFrame()
 	{
+		if (m_bImguiEnabled)
+		{
+			ImGui::Render();
+			ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+		}
+
 		GFX_EXC(m_Swapchain->Present(1u, 0u));
 	}
 
 	void D3D11Core::BeginFrame(DirectX::XMVECTORF32 color) noexcept
 	{
+		if (m_bImguiEnabled)
+		{
+			ImGui_ImplDX11_NewFrame();
+			ImGui_ImplWin32_NewFrame();
+			ImGui::NewFrame();
+		}
+
 		m_DeviceContext->ClearRenderTargetView(m_RenderTargetView.Get(), color);
 		m_DeviceContext->ClearDepthStencilView(m_DepthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 	}
@@ -46,6 +63,21 @@ namespace D3D11
 	DirectX::XMMATRIX D3D11Core::GetView() const noexcept
 	{
 		return m_View;
+	}
+
+	void D3D11Core::EnableImgui() noexcept
+	{
+		m_bImguiEnabled = true;
+	}
+
+	void D3D11Core::DisableImgui() noexcept
+	{
+		m_bImguiEnabled = false;
+	}
+
+	bool D3D11Core::IsImguiEnabled() const noexcept
+	{
+		return m_bImguiEnabled;
 	}
 
 	void D3D11Core::CreateDeviceAndSwapChain(HWND hWnd, int width, int height)
