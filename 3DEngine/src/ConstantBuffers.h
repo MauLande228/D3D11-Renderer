@@ -36,16 +36,15 @@ namespace D3D11
 			GFX_EXC(GetDevice(gfx)->CreateBuffer(&cBufferDesc, nullptr, &m_ConstantBuffer));
 		}
 
-		void Update(D3D11Core& gfx, const T& data)
+		void Update(D3D11Core& gfx, const T& consts)
 		{
-			D3D11_MAPPED_SUBRESOURCE subresource{};
+			D3D11_MAPPED_SUBRESOURCE msr;
 			GFX_EXC(GetContext(gfx)->Map(
-				m_ConstantBuffer.Get(),
-				0u,
-				D3D11_MAP_WRITE_DISCARD,
-				0u,
-				&subresource));
-			memcpy(subresource.pData, &data, sizeof(data));
+				m_ConstantBuffer.Get(), 0u,
+				D3D11_MAP_WRITE_DISCARD, 0u,
+				&msr
+			));
+			memcpy(msr.pData, &consts, sizeof(consts));
 			GetContext(gfx)->Unmap(m_ConstantBuffer.Get(), 0u);
 		}
 

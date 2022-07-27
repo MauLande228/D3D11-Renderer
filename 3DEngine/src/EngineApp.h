@@ -4,6 +4,8 @@
 #include "Primitives/Sphere.h"
 #include "ImGuiManager.h"
 #include "Actor.h"
+#include "Camera.h"
+#include "PointLight.h"
 
 constexpr float PI = 3.14159265f;
 
@@ -33,8 +35,11 @@ namespace Engine
 	private:
 		ImGuiManager m_ImGui{};
 
-		Window		m_Window{ 800, 600, L"D3D12 Renderer" };
-		Timer		m_Timer{};
+		Window	m_Window{ 800, 600, L"D3D12 Renderer" };
+		Camera	m_Camera{};
+		Timer	m_Timer{};
+
+		PointLight m_PointLight;
 
 		std::vector<std::unique_ptr<Actor>> m_Actors;
 		static constexpr size_t nActors = 80;

@@ -13,7 +13,14 @@ namespace D3D11
 		void Bind(D3D11Core& gfx) noexcept override;
 
 	private:
+		struct Transforms
+		{
+			DirectX::XMMATRIX model;
+			DirectX::XMMATRIX modelViewProj;
+		};
+
+	private:
 		const Actor& m_Parent;
-		static std::unique_ptr<VertexConstantBuffer<DirectX::XMMATRIX>> m_ConstantBuffer;
+		static std::unique_ptr<VertexConstantBuffer<Transforms>> m_ConstantBuffer;
 	};
 }

@@ -120,6 +120,15 @@
     <ClInclude Include="src\ImGuiManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PointLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Primitives\LightBulb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Window.cpp">
@@ -212,6 +221,15 @@
     <ClCompile Include="src\ImGuiManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PointLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Primitives\LightBulb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders\VertexShader.hlsl" />
@@ -220,5 +238,9 @@
     <FxCompile Include="shaders\SpherePS.hlsl" />
     <FxCompile Include="shaders\TextureVS.hlsl" />
     <FxCompile Include="shaders\TexturePS.hlsl" />
+    <FxCompile Include="shaders\PhongVS.hlsl" />
+    <FxCompile Include="shaders\PhongPS.hlsl" />
+    <FxCompile Include="shaders\LightBulbVS.hlsl" />
+    <FxCompile Include="shaders\LightBulbPS.hlsl" />
   </ItemGroup>
 </Project>

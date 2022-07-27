@@ -7,9 +7,10 @@
 
 namespace Engine
 {
-	EngineApp::EngineApp()
+	EngineApp::EngineApp() :
+		m_PointLight(m_Window.Gfx())
 	{
-		class Factory
+		/*class Factory
 		{
 		public:
 			Factory(D3D11::D3D11Core& gfx)
@@ -50,7 +51,20 @@ namespace Engine
 
 		Factory f(m_Window.Gfx());
 		m_Actors.reserve(nActors);
-		std::generate_n(std::back_inserter(m_Actors), nActors, f);
+		std::generate_n(std::back_inserter(m_Actors), nActors, f);*/
+
+		std::mt19937 rng(std::random_device{}());
+		std::uniform_real_distribution<float> adist(0.0f, 3.1415f * 2.0f);
+		std::uniform_real_distribution<float> ddist(0.0f, 3.1415f * 2.0f);
+		std::uniform_real_distribution<float> odist(0.0f, 3.1415f * 0.3f);
+		std::uniform_real_distribution<float> rdist(6.0f, 20.0f);
+		for (auto i = 0; i < nActors; i++)
+		{
+			m_Actors.push_back(std::make_unique<Box>(
+				m_Window.Gfx(), rng, adist,
+				ddist, odist, rdist
+				));
+		}
 
 		m_Window.Gfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
 	}
@@ -111,18 +125,18 @@ namespace Engine
 	void EngineApp::Draw()
 	{
 		m_Window.Gfx().BeginFrame(DirectX::Colors::Black);
+		m_Window.Gfx().SetCamera(m_Camera.GetMatrix());
+		m_PointLight.Bind(m_Window.Gfx());
 
 		for (auto& b : m_Actors)
 		{
-			b->Update(m_Timer.DeltaTime());
+			b->Update(m_Timer.DeltaTime()/2);
 			b->Draw(m_Window.Gfx());
 		}
+		m_PointLight.Draw(m_Window.Gfx());
 
-		static bool show_demo_window = true;
-		if (show_demo_window)
-		{
-			ImGui::ShowDemoWindow(&show_demo_window);
-		}
+		m_Camera.SpawnControlWindow();
+		m_PointLight.SpawnControlWindow();
 
 		m_Window.Gfx().EndFrame();
 	}

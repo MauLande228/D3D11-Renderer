@@ -26,11 +26,11 @@ Box::Box(D3D11Core& gfx,
 		auto geo = m_GeoGen.CreateBox(2, 2, 2, 1);
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, geo.vertices));
 
-		auto pvs = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
+		auto pvs = std::make_unique<VertexShader>(gfx, L"PhongVS.cso");
 		auto pvsbc = pvs->GetByteCode();
 		AddStaticBind(std::move(pvs));
 
-		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelShader.cso"));
+		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PhongPS.cso"));
 
 		auto ib = std::make_unique<IndexBuffer>(gfx, geo.GetIndices16());
 		m_Count = ib->GetCount();
@@ -57,7 +57,7 @@ Box::Box(D3D11Core& gfx,
 				{ 0.0f,1.0f,1.0f },
 			}
 		};
-		AddStaticBind(std::make_unique<PixelConstantBuffer<ConstantBuffer2>>(gfx, cb2));
+		//AddStaticBind(std::make_unique<PixelConstantBuffer<ConstantBuffer2>>(gfx, cb2));
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
 		{
@@ -88,6 +88,5 @@ DirectX::XMMATRIX Box::GetTransform() const noexcept
 {
 	return DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
 		DirectX::XMMatrixTranslation(r, 0.0f, 0.0f) *
-		DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi) *
-		DirectX::XMMatrixTranslation(0.0f, 0.0f, 20.0f);
+		DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi);
 }

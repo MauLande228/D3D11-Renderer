@@ -23,7 +23,8 @@ Sphere::Sphere(D3D11Core& gfx,
 {
 	if (!IsStaticInitialized())
 	{
-		auto geo = m_GeoGen.CreateSphere(2, 20, 20);
+		//auto geo = m_GeoGen.CreateSphere(1, 30, 30);
+		auto geo = m_GeoGen.CreateCylinder(1, 0.5, 2, 10, 10);
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, geo.vertices));
 
 		AddStaticBind(std::make_unique<Texture>(gfx, "textures/brick.png"));
@@ -91,6 +92,5 @@ DirectX::XMMATRIX Sphere::GetTransform() const noexcept
 {
 	return DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
 		DirectX::XMMatrixTranslation(r, 0.0f, 0.0f) *
-		DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi) *
-		DirectX::XMMatrixTranslation(0.0f, 0.0f, 20.0f);
+		DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi);
 }
