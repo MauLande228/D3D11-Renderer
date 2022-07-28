@@ -11,7 +11,7 @@ protected:
 
 	static void AddStaticBind(std::unique_ptr<D3D11::Bindable> bind) noexcept(!_DEBUG)
 	{
-		//assert(typeid(*bind) != typeid(D3D11::IndexBuffer) && "MUST use AddIndexBuffer to bind a valid index buffer");
+		assert(typeid(*bind) != typeid(D3D11::IndexBuffer) && "MUST use AddIndexBuffer to bind a valid index buffer");
 
 		m_StaticBinds.push_back(std::move(bind));
 	}

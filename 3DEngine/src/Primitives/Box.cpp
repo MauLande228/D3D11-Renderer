@@ -23,8 +23,9 @@ Box::Box(D3D11Core& gfx,
 {
 	if (!IsStaticInitialized())
 	{
-		auto geo = m_GeoGen.CreateBox(2, 2, 2, 1);
-		AddStaticBind(std::make_unique<VertexBuffer>(gfx, geo.vertices));
+		auto geo = m_GeoGen.CreateBox(1.5, 1.5, 1.5, 1);
+		//auto geo = m_GeoGen.CreateSphere(1, 30, 30);
+		AddStaticBind(std::make_unique<VertexBuffer>(gfx, geo.Vertices));
 
 		auto pvs = std::make_unique<VertexShader>(gfx, L"PhongVS.cso");
 		auto pvsbc = pvs->GetByteCode();
@@ -33,31 +34,8 @@ Box::Box(D3D11Core& gfx,
 		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PhongPS.cso"));
 
 		auto ib = std::make_unique<IndexBuffer>(gfx, geo.GetIndices16());
-		m_Count = ib->GetCount();
-		AddStaticBind(std::move(ib));
-
-		struct ConstantBuffer2
-		{
-			struct
-			{
-				float r;
-				float g;
-				float b;
-				float a;
-			} face_colors[6];
-		};
-		const ConstantBuffer2 cb2 =
-		{
-			{
-				{ 1.0f,0.0f,1.0f },
-				{ 1.0f,0.0f,0.0f },
-				{ 0.0f,1.0f,0.0f },
-				{ 0.0f,0.0f,1.0f },
-				{ 1.0f,1.0f,0.0f },
-				{ 0.0f,1.0f,1.0f },
-			}
-		};
-		//AddStaticBind(std::make_unique<PixelConstantBuffer<ConstantBuffer2>>(gfx, cb2));
+		//m_Count = ib->GetCount();
+		AddStaticIndexBuffer(std::move(ib));
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
 		{
@@ -69,6 +47,10 @@ Box::Box(D3D11Core& gfx,
 		AddStaticBind(std::make_unique<InputLayout>(gfx, ied, pvsbc));
 
 		AddStaticBind(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+	}
+	else
+	{
+		SetIndexFromStatic();
 	}
 
 	AddBind(std::make_unique<Transform>(gfx, *this));

@@ -25,7 +25,7 @@ Sphere::Sphere(D3D11Core& gfx,
 	{
 		//auto geo = m_GeoGen.CreateSphere(1, 30, 30);
 		auto geo = m_GeoGen.CreateCylinder(1, 0.5, 2, 10, 10);
-		AddStaticBind(std::make_unique<VertexBuffer>(gfx, geo.vertices));
+		AddStaticBind(std::make_unique<VertexBuffer>(gfx, geo.Vertices));
 
 		AddStaticBind(std::make_unique<Texture>(gfx, "textures/brick.png"));
 		AddStaticBind(std::make_unique<Sampler>(gfx));
@@ -37,8 +37,8 @@ Sphere::Sphere(D3D11Core& gfx,
 		AddStaticBind(std::make_unique<PixelShader>(gfx, L"TexturePS.cso"));
 
 		auto ib = std::make_unique<IndexBuffer>(gfx, geo.GetIndices16());
-		m_Count = ib->GetCount();
-		AddStaticBind(std::move(ib));
+		//m_Count = ib->GetCount();
+		AddStaticIndexBuffer(std::move(ib));
 
 		struct ConstantBuffer2
 		{
@@ -73,6 +73,10 @@ Sphere::Sphere(D3D11Core& gfx,
 		AddStaticBind(std::make_unique<InputLayout>(gfx, ied, pvsbc));
 
 		AddStaticBind(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+	}
+	else
+	{
+		SetIndexFromStatic();
 	}
 
 	AddBind(std::make_unique<Transform>(gfx, *this));

@@ -37,7 +37,6 @@ private:
 
 protected:
 	const D3D11::IndexBuffer* m_IndexBuffer = nullptr;
-	static size_t m_Count;
 	std::vector<std::unique_ptr<D3D11::Bindable>> m_Binds;
 
 	id_t m_ID;

@@ -3,13 +3,13 @@ cbuffer Light
     float3 lightPos;
 };
 
-static const float3 MaterialColor = { 0.7f, 0.7f, 0.9f };
+static const float3 MaterialColor = { 0.7f, 0.9f, 0.7f };
 static const float3 Ambient = { 0.05f, 0.05f, 0.05f };
 static const float3 DiffuseColor = { 1.0f, 1.0f, 1.0f };
 static const float DiffuseIntensity = 1.0f;
 static const float AttConst = 1.0f;
 static const float AttLin = 0.045f;
-static const float AttQuad = 0.0075f;
+static const float AttQuad = 0.008f;
 
 struct VsOut
 {
@@ -32,5 +32,5 @@ float4 main(VsOut vsin) : SV_TARGET
     const float3 diffuse = DiffuseColor * DiffuseIntensity * att * max(0.0f, dot(dirToL, vsin.normal));
     
     // Final color
-    return float4(saturate(diffuse + Ambient), 1.0f);
+    return float4(saturate((diffuse + Ambient) * MaterialColor), 1.0f);
 }
