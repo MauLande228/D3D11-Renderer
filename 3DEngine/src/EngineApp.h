@@ -2,6 +2,7 @@
 #include "Timer.h"
 #include "Primitives/Box.h"
 #include "Primitives/Sphere.h"
+#include "Model.h"
 #include "ImGuiManager.h"
 #include "Actor.h"
 #include "Camera.h"
@@ -42,6 +43,6 @@ namespace Engine
 		PointLight m_PointLight;
 
 		std::vector<std::unique_ptr<Actor>> m_Actors;
-		static constexpr size_t nActors = 100;
+		static constexpr size_t nActors = 80;
 	};
 }

@@ -65,9 +65,9 @@ namespace Engine
 		for (auto i = 0; i < nActors; i++)
 		{
 			const DirectX::XMFLOAT3 mat = { cdist(rng),cdist(rng),cdist(rng) };
-			m_Actors.push_back(std::make_unique<Sphere>(
+			m_Actors.push_back(std::make_unique<Model>(
 				m_Window.Gfx(), rng, adist,
-				ddist, odist, rdist, mat
+				ddist, odist, rdist, mat, 1
 				));
 		}
 

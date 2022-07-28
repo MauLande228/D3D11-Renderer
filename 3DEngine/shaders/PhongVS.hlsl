@@ -8,8 +8,8 @@ struct VsIn
 {
     float3 pos : POSITION;
     float3 normal : NORMAL;
-    float3 tangent : TANGENTU;
-    float2 tc : TEXCOORD;
+    //float3 tangent : TANGENTU;
+    //float2 tc : TEXCOORD;
 };
 
 struct VsOut
