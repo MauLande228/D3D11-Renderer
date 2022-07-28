@@ -4,6 +4,9 @@
 #include "../imgui/imgui.h"
 
 #include <algorithm>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 namespace Engine
 {
@@ -67,6 +70,11 @@ namespace Engine
 				ddist, odist, rdist, mat
 				));
 		}
+
+
+		Assimp::Importer imp;
+		auto model = imp.ReadFile("models/suzanne.obj", aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+
 
 		m_Window.Gfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 50.0f));
 	}
