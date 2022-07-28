@@ -42,6 +42,6 @@ namespace Engine
 		PointLight m_PointLight;
 
 		std::vector<std::unique_ptr<Actor>> m_Actors;
-		static constexpr size_t nActors = 80;
+		static constexpr size_t nActors = 100;
 	};
 }

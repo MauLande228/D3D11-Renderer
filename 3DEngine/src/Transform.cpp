@@ -1,24 +1,23 @@
 #include "Transform.h"
 
-D3D11::Transform::Transform(D3D11Core& gfx, const Actor& parent) :
+D3D11::Transform::Transform(D3D11Core& gfx, const Actor& parent, UINT slot) :
 	m_Parent(parent)
 {
 	if (!m_ConstantBuffer)
 	{
-		m_ConstantBuffer = std::make_unique<VertexConstantBuffer<Transforms>>(gfx);
+		m_ConstantBuffer = std::make_unique<VertexConstantBuffer<Transforms>>(gfx, slot);
 	}
 }
 
 void D3D11::Transform::Bind(D3D11Core& gfx) noexcept
 {
-	const auto model = m_Parent.GetTransform();
+	const auto modelView = m_Parent.GetTransform() * gfx.GetView();
 
 	const Transforms tf =
 	{
-		DirectX::XMMatrixTranspose(model),
+		DirectX::XMMatrixTranspose(modelView),
 		DirectX::XMMatrixTranspose(
-			model *
-			gfx.GetView() *
+			modelView *
 			gfx.GetProjection()
 		)
 	};

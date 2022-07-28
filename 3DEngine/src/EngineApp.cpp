@@ -58,15 +58,17 @@ namespace Engine
 		std::uniform_real_distribution<float> ddist(0.0f, 3.1415f * 2.0f);
 		std::uniform_real_distribution<float> odist(0.0f, 3.1415f * 0.3f);
 		std::uniform_real_distribution<float> rdist(6.0f, 20.0f);
+		std::uniform_real_distribution<float> cdist{ 0.0f,1.0f };
 		for (auto i = 0; i < nActors; i++)
 		{
-			m_Actors.push_back(std::make_unique<Box>(
+			const DirectX::XMFLOAT3 mat = { cdist(rng),cdist(rng),cdist(rng) };
+			m_Actors.push_back(std::make_unique<Sphere>(
 				m_Window.Gfx(), rng, adist,
-				ddist, odist, rdist
+				ddist, odist, rdist, mat
 				));
 		}
 
-		m_Window.Gfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
+		m_Window.Gfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 50.0f));
 	}
 
 	EngineApp::~EngineApp()
@@ -126,7 +128,7 @@ namespace Engine
 	{
 		m_Window.Gfx().BeginFrame(DirectX::Colors::Black);
 		m_Window.Gfx().SetCamera(m_Camera.GetMatrix());
-		m_PointLight.Bind(m_Window.Gfx());
+		m_PointLight.Bind(m_Window.Gfx(), m_Camera.GetMatrix());
 
 		for (auto& b : m_Actors)
 		{

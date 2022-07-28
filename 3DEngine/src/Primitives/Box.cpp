@@ -8,7 +8,8 @@ Box::Box(D3D11Core& gfx,
 	std::uniform_real_distribution<float>& adist,
 	std::uniform_real_distribution<float>& ddist,
 	std::uniform_real_distribution<float>& odist,
-	std::uniform_real_distribution<float>& rdist)
+	std::uniform_real_distribution<float>& rdist,
+	DirectX::XMFLOAT3 material)
 	:
 	r(rdist(rng)),
 	droll(ddist(rng)),
@@ -54,6 +55,16 @@ Box::Box(D3D11Core& gfx,
 	}
 
 	AddBind(std::make_unique<Transform>(gfx, *this));
+
+	struct PSMaterialConstant
+	{
+		DirectX::XMFLOAT3 color;
+		float specularIntensity = 0.6f;
+		float specularPower = 30.0f;
+		float padding[3];
+	} colorConst;
+	colorConst.color = material;
+	AddBind(std::make_unique<PixelConstantBuffer<PSMaterialConstant>>(gfx, colorConst, 1u));
 }
 
 void Box::Update(float dt) noexcept

@@ -1,6 +1,6 @@
 cbuffer CBuf
 {
-    matrix model;
+    matrix modelView;
     matrix modelViewProj;
 };
 
@@ -23,8 +23,8 @@ VsOut main(VsIn input )
 {
     VsOut vsout;
     
-    vsout.worldPos = (float3) mul(float4(input.pos, 1.0f), model);
-    vsout.normal = mul(input.normal, (float3x3) model);
+    vsout.worldPos = (float3) mul(float4(input.pos, 1.0f), modelView);
+    vsout.normal = mul(input.normal, (float3x3) modelView);
     vsout.pos = mul(float4(input.pos, 1.0f), modelViewProj);
     
     return vsout;

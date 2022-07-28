@@ -8,7 +8,8 @@ Sphere::Sphere(D3D11Core& gfx,
 	std::uniform_real_distribution<float>& adist,
 	std::uniform_real_distribution<float>& ddist,
 	std::uniform_real_distribution<float>& odist,
-	std::uniform_real_distribution<float>& rdist)
+	std::uniform_real_distribution<float>& rdist,
+	DirectX::XMFLOAT3 material)
 	:
 	r(rdist(rng)),
 	droll(ddist(rng)),
@@ -23,45 +24,18 @@ Sphere::Sphere(D3D11Core& gfx,
 {
 	if (!IsStaticInitialized())
 	{
-		//auto geo = m_GeoGen.CreateSphere(1, 30, 30);
-		auto geo = m_GeoGen.CreateCylinder(1, 0.5, 2, 10, 10);
+		auto geo = m_GeoGen.CreateSphere(1, 30, 30);
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, geo.Vertices));
 
-		AddStaticBind(std::make_unique<Texture>(gfx, "textures/brick.png"));
-		AddStaticBind(std::make_unique<Sampler>(gfx));
-
-		auto pvs = std::make_unique<VertexShader>(gfx, L"TextureVS.cso");
+		auto pvs = std::make_unique<VertexShader>(gfx, L"PhongVS.cso");
 		auto pvsbc = pvs->GetByteCode();
 		AddStaticBind(std::move(pvs));
 
-		AddStaticBind(std::make_unique<PixelShader>(gfx, L"TexturePS.cso"));
+		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PhongPS.cso"));
 
 		auto ib = std::make_unique<IndexBuffer>(gfx, geo.GetIndices16());
 		//m_Count = ib->GetCount();
 		AddStaticIndexBuffer(std::move(ib));
-
-		struct ConstantBuffer2
-		{
-			struct
-			{
-				float r;
-				float g;
-				float b;
-				float a;
-			} face_colors[6];
-		};
-		const ConstantBuffer2 cb2 =
-		{
-			{
-				{ 1.0f,0.0f,1.0f },
-				{ 1.0f,0.0f,0.0f },
-				{ 0.0f,1.0f,0.0f },
-				{ 0.0f,0.0f,1.0f },
-				{ 1.0f,1.0f,0.0f },
-				{ 0.0f,1.0f,1.0f },
-			}
-		};
-		//AddStaticBind(std::make_unique<PixelConstantBuffer<ConstantBuffer2>>(gfx, cb2));
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
 		{
@@ -80,6 +54,16 @@ Sphere::Sphere(D3D11Core& gfx,
 	}
 
 	AddBind(std::make_unique<Transform>(gfx, *this));
+
+	struct PSMaterialConstant
+	{
+		DirectX::XMFLOAT3 color;
+		float specularIntensity = 0.5f;
+		float specularPower = 30.0f;
+		float padding[3];
+	} colorConst;
+	colorConst.color = material;
+	AddBind(std::make_unique<PixelConstantBuffer<PSMaterialConstant>>(gfx, colorConst, 1u));
 }
 
 void Sphere::Update(float dt) noexcept

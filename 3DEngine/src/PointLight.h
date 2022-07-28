@@ -11,7 +11,7 @@ public:
 
 	
 	void Draw(D3D11::D3D11Core& gfx) const noexcept(!_DEBUG);
-	void Bind(D3D11::D3D11Core& gfx) const noexcept;
+	void Bind(D3D11::D3D11Core& gfx, DirectX::FXMMATRIX view) const noexcept;
 
 	void SpawnControlWindow() noexcept;
 	void Reset() noexcept;
@@ -19,12 +19,17 @@ public:
 private:
 	struct PointLightCB
 	{
-		DirectX::XMFLOAT3 pos;
-		float padding;
+		alignas(16)DirectX::XMFLOAT3 Pos;
+		alignas(16)DirectX::XMFLOAT3 Ambient;
+		alignas(16)DirectX::XMFLOAT3 DiffuseColor;
+		float DiffuseIntensity;
+		float AttConst;
+		float AttLin;
+		float AttQuad;
 	};
 
 private:
-	DirectX::XMFLOAT3 m_Position = { 0.0f, 0.0f, 0.0f };
+	PointLightCB m_Data;
 	mutable LightBulb m_Mesh;
 	mutable D3D11::PixelConstantBuffer<PointLightCB> m_CBuffer;
 };

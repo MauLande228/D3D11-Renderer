@@ -8,7 +8,7 @@ namespace D3D11
 	class Transform : public Bindable
 	{
 	public:
-		Transform(D3D11Core& gfx, const Actor& parent);
+		Transform(D3D11Core& gfx, const Actor& parent, UINT slot = 0);
 		
 		void Bind(D3D11Core& gfx) noexcept override;
 
