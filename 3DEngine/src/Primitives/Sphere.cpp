@@ -11,20 +11,11 @@ Sphere::Sphere(D3D11Core& gfx,
 	std::uniform_real_distribution<float>& rdist,
 	DirectX::XMFLOAT3 material)
 	:
-	r(rdist(rng)),
-	droll(ddist(rng)),
-	dpitch(ddist(rng)),
-	dyaw(ddist(rng)),
-	dphi(odist(rng)),
-	dtheta(odist(rng)),
-	dchi(odist(rng)),
-	chi(adist(rng)),
-	theta(adist(rng)),
-	phi(adist(rng))
+	BaseGameObject(gfx, rng, adist, ddist, odist, rdist)
 {
 	if (!IsStaticInitialized())
 	{
-		auto geo = m_GeoGen.CreateSphere(1, 30, 30);
+		auto geo = m_GeoGen.CreateSphere(1.5, 30, 30);
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, geo.Vertices));
 
 		auto pvs = std::make_unique<VertexShader>(gfx, L"PhongVS.cso");
@@ -34,7 +25,6 @@ Sphere::Sphere(D3D11Core& gfx,
 		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PhongPS.cso"));
 
 		auto ib = std::make_unique<IndexBuffer>(gfx, geo.GetIndices16());
-		//m_Count = ib->GetCount();
 		AddStaticIndexBuffer(std::move(ib));
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
@@ -55,30 +45,11 @@ Sphere::Sphere(D3D11Core& gfx,
 
 	AddBind(std::make_unique<Transform>(gfx, *this));
 
-	struct PSMaterialConstant
-	{
-		DirectX::XMFLOAT3 color;
-		float specularIntensity = 0.5f;
-		float specularPower = 30.0f;
-		float padding[3];
-	} colorConst;
-	colorConst.color = material;
-	AddBind(std::make_unique<PixelConstantBuffer<PSMaterialConstant>>(gfx, colorConst, 1u));
-}
-
-void Sphere::Update(float dt) noexcept
-{
-	roll += droll * dt;
-	pitch += dpitch * dt;
-	yaw += dyaw * dt;
-	theta += dtheta * dt;
-	phi += dphi * dt;
-	chi += dchi * dt;
+	MaterialConstants.color = material;
+	AddBind(std::make_unique<PixelConstantBuffer<PSMaterialConstant>>(gfx, MaterialConstants, 1u));
 }
 
 DirectX::XMMATRIX Sphere::GetTransform() const noexcept
 {
-	return DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
-		DirectX::XMMatrixTranslation(r, 0.0f, 0.0f) *
-		DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi);
+	return DirectX::XMLoadFloat4x4(&m_Transform) * BaseGameObject::GetTransform();
 }

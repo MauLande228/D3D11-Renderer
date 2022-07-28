@@ -129,6 +129,12 @@
     <ClInclude Include="src\Primitives\LightBulb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\BaseGameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Window.cpp">

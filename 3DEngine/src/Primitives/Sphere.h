@@ -2,38 +2,33 @@
 
 #include "../ActorBase.h"
 #include "../Geometry.h"
+#include "../BaseGameObject.h"
+#include "../Math.h"
 
-#include <random>
-
-class Sphere : public ActorBase<Sphere>
+class Sphere : public BaseGameObject<Sphere>
 {
 public:
-	Sphere(D3D11::D3D11Core& gfx, std::mt19937& rng,
+	Sphere(
+		D3D11::D3D11Core& gfx,
+		std::mt19937& rng,
 		std::uniform_real_distribution<float>& adist,
 		std::uniform_real_distribution<float>& ddist,
 		std::uniform_real_distribution<float>& odist,
 		std::uniform_real_distribution<float>& rdist,
 		DirectX::XMFLOAT3 material);
 
-	void Update(float dt) noexcept override;
 	DirectX::XMMATRIX GetTransform() const noexcept override;
 
 private:
-	// positional
-	float r;
-	float roll = 0.0f;
-	float pitch = 0.0f;
-	float yaw = 0.0f;
-	float theta;
-	float phi;
-	float chi;
-	// speed (delta/s)
-	float droll;
-	float dpitch;
-	float dyaw;
-	float dtheta;
-	float dphi;
-	float dchi;
+	struct PSMaterialConstant
+	{
+		DirectX::XMFLOAT3 color;
+		float specularIntensity = 0.6f;
+		float specularPower = 30.0f;
+		float padding[3];
+	} MaterialConstants;
 
-	Geometry m_GeoGen;
+private:
+	DirectX::XMFLOAT4X4 m_Transform = Math::Identity4x4();
+	Geometry			m_GeoGen;
 };
