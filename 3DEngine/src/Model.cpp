@@ -1,5 +1,6 @@
 #include "Model.h"
 #include "BindableBase.h"
+#include "DynamicVertex.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -20,11 +21,8 @@ Model::Model(
 {
 	if (!IsStaticInitialized())
 	{
-		struct Vertex
-		{
-			DirectX::XMFLOAT3 Pos;
-			DirectX::XMFLOAT3 Normal;
-		};
+		VertexResource vbuf(std::move(
+			VertexLayout{}.Append(VertexLayout::Position3D).Append(VertexLayout::Normal)));
 
 		Assimp::Importer imp;
 		const auto pModel = imp.ReadFile(
@@ -34,14 +32,13 @@ Model::Model(
 
 		const auto pMesh = pModel->mMeshes[0];
 
-		std::vector<Vertex> vertices;
-		vertices.reserve(pMesh->mNumVertices);
+		//std::vector<Vertex> vertices;
+		//vertices.reserve(pMesh->mNumVertices);
 		for (unsigned int i = 0; i < pMesh->mNumVertices; i++)
 		{
-			vertices.push_back({
-				{pMesh->mVertices[i].x * scale, pMesh->mVertices[i].y * scale, pMesh->mVertices[i].z * scale},
-				*reinterpret_cast<DirectX::XMFLOAT3*>(&pMesh->mNormals[i])
-				});
+			vbuf.EmplaceBack(
+				DirectX::XMFLOAT3{ pMesh->mVertices[i].x * scale, pMesh->mVertices[i].y * scale, pMesh->mVertices[i].z * scale },
+				*reinterpret_cast<DirectX::XMFLOAT3*>(&pMesh->mNormals[i]));
 		}
 
 		std::vector<unsigned short> indices;
@@ -56,7 +53,7 @@ Model::Model(
 			indices.push_back(face.mIndices[2]);
 		}
 
-		AddStaticBind(std::make_unique<VertexBuffer>(gfx, vertices));
+		AddStaticBind(std::make_unique<VertexBuffer>(gfx, vbuf));
 		AddStaticIndexBuffer(std::make_unique<IndexBuffer>(gfx, indices));
 
 		auto pvs = std::make_unique<VertexShader>(gfx, L"PhongVS.cso");
@@ -65,13 +62,13 @@ Model::Model(
 
 		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PhongPS.cso"));
 
-		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
+		/*const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
 		{
 			{ "POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },
 			{ "NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0 },
-		};
+		};*/
 
-		AddStaticBind(std::make_unique<InputLayout>(gfx, ied, pvsbc));
+		AddStaticBind(std::make_unique<InputLayout>(gfx, vbuf.GetLayout().GetD3DLayout(), pvsbc));
 		AddStaticBind(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
 		struct PSMaterialConstant

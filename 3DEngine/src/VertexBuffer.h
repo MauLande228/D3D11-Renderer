@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Bindable.h"
+#include "DynamicVertex.h"
 
 #include <vector>
 
@@ -23,6 +24,22 @@ namespace D3D11
 
 			D3D11_SUBRESOURCE_DATA subresourceData{};
 			subresourceData.pSysMem = vertices.data();
+			GFX_EXC(GetDevice(gfx)->CreateBuffer(&vBufferDesc, &subresourceData, &m_VertexBuffer));
+		}
+
+		VertexBuffer(D3D11Core& gfx, const VertexResource& vbuf) :
+			m_Stride((UINT)vbuf.GetLayout().Size())
+		{
+			D3D11_BUFFER_DESC vBufferDesc{};
+			vBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			vBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+			vBufferDesc.CPUAccessFlags = 0u;
+			vBufferDesc.MiscFlags = 0u;
+			vBufferDesc.ByteWidth = UINT(vbuf.SizeBytes());
+			vBufferDesc.StructureByteStride = m_Stride;
+
+			D3D11_SUBRESOURCE_DATA subresourceData{};
+			subresourceData.pSysMem = vbuf.GetData();
 			GFX_EXC(GetDevice(gfx)->CreateBuffer(&vBufferDesc, &subresourceData, &m_VertexBuffer));
 		}
 
