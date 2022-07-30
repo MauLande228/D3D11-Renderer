@@ -2,6 +2,7 @@
 
 #include "WinUtils.h"
 #include "D3DUtil.h"
+#include "Macros.h"
 
 namespace D3D11
 {

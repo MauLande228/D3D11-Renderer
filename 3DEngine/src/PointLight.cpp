@@ -8,7 +8,7 @@ PointLight::PointLight(D3D11::D3D11Core& gfx, float radius) :
 	Reset();
 }
 
-void PointLight::Draw(D3D11::D3D11Core& gfx) const noexcept(!_DEBUG)
+void PointLight::Draw(D3D11::D3D11Core& gfx) const NOXND
 {
 	m_Mesh.SetPosition(m_Data.Pos);
 	m_Mesh.Draw(gfx);

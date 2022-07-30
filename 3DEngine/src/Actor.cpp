@@ -4,7 +4,7 @@
 #include <cassert>
 #include <typeinfo>
 
-void Actor::Draw(D3D11::D3D11Core& gfx) const noexcept(!_DEBUG)
+void Actor::Draw(D3D11::D3D11Core& gfx) const NOXND
 {
 	for (auto& b : m_Binds)
 	{
@@ -18,7 +18,7 @@ void Actor::Draw(D3D11::D3D11Core& gfx) const noexcept(!_DEBUG)
 	gfx.DrawIndexed(m_IndexBuffer->GetCount());
 }
 
-void Actor::AddBind(std::unique_ptr<D3D11::Bindable> bind) noexcept(!_DEBUG)
+void Actor::AddBind(std::unique_ptr<D3D11::Bindable> bind) NOXND
 {
 	assert(typeid(*bind) != typeid(D3D11::IndexBuffer) && "MUST use AddIndexBuffer to bind a valid index buffer");
 

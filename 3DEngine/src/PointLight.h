@@ -10,7 +10,7 @@ public:
 	PointLight(D3D11::D3D11Core& gfx, float radius = 0.5f);
 
 	
-	void Draw(D3D11::D3D11Core& gfx) const noexcept(!_DEBUG);
+	void Draw(D3D11::D3D11Core& gfx) const NOXND;
 	void Bind(D3D11::D3D11Core& gfx, DirectX::FXMMATRIX view) const noexcept;
 
 	void SpawnControlWindow() noexcept;

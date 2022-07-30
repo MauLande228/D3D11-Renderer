@@ -1,6 +1,7 @@
 #pragma once
 
 #include "D3D11Core.h"
+#include "Macros.h"
 
 #include <vector>
 #include <type_traits>
@@ -92,7 +93,7 @@ namespace D3D11
 				m_Offset(offset)
 			{}
 
-			size_t GetOffsetAfter() const noexcept(!_DEBUG)
+			size_t GetOffsetAfter() const NOXND
 			{
 				return m_Offset + Size();
 			}
@@ -102,12 +103,12 @@ namespace D3D11
 				return m_Offset;
 			}
 
-			size_t Size() const noexcept(!_DEBUG)
+			size_t Size() const NOXND
 			{
 				return SizeOf(m_Type);
 			}
 
-			static constexpr size_t SizeOf(ElementType type) noexcept(!_DEBUG)
+			static constexpr size_t SizeOf(ElementType type) NOXND
 			{
 				switch (type)
 				{
@@ -136,7 +137,7 @@ namespace D3D11
 				return m_Type;
 			}
 
-			D3D11_INPUT_ELEMENT_DESC GetDesc() const noexcept(!_DEBUG)
+			D3D11_INPUT_ELEMENT_DESC GetDesc() const NOXND
 			{
 				switch (m_Type)
 				{
@@ -161,7 +162,7 @@ namespace D3D11
 
 		private:
 			template<ElementType type>
-			static constexpr D3D11_INPUT_ELEMENT_DESC GenerateDesc(size_t offset) noexcept(!_DEBUG)
+			static constexpr D3D11_INPUT_ELEMENT_DESC GenerateDesc(size_t offset) NOXND
 			{
 				return { Map<type>::Semantic, 0, Map<type>::DxgiFormat, 0, (UINT)offset, D3D11_INPUT_PER_VERTEX_DATA, 0 };
 			}
@@ -173,7 +174,7 @@ namespace D3D11
 
 	public:
 		template<ElementType type>
-		const Element& Resolve() const noexcept(!_DEBUG)
+		const Element& Resolve() const NOXND
 		{
 			for (auto& e : m_Elements)
 			{
@@ -187,18 +188,18 @@ namespace D3D11
 			return m_Elements.front();
 		}
 
-		const Element& ResolveByIndex(size_t i) const noexcept(!_DEBUG)
+		const Element& ResolveByIndex(size_t i) const NOXND
 		{
 			return m_Elements[i];
 		}
 
-		VertexLayout& Append(ElementType type) noexcept(!_DEBUG)
+		VertexLayout& Append(ElementType type) NOXND
 		{
 			m_Elements.emplace_back(type, Size());
 			return *this;
 		}
 
-		size_t Size() const noexcept(!_DEBUG)
+		size_t Size() const NOXND
 		{
 			return m_Elements.empty() ? 0u : m_Elements.back().GetOffsetAfter();
 		}
@@ -208,7 +209,7 @@ namespace D3D11
 			return m_Elements.size();
 		}
 
-		std::vector<D3D11_INPUT_ELEMENT_DESC> GetD3DLayout() const noexcept(!_DEBUG)
+		std::vector<D3D11_INPUT_ELEMENT_DESC> GetD3DLayout() const NOXND
 		{
 			std::vector<D3D11_INPUT_ELEMENT_DESC> desc;
 			desc.reserve(GetElementCount());
@@ -234,14 +235,14 @@ namespace D3D11
 		friend class VertexResource;
 	public:
 		template<VertexLayout::ElementType Type>
-		auto& Attr() noexcept(!_DEBUG)
+		auto& Attr() NOXND
 		{
 			auto pAttribute = m_pData + m_Layout.Resolve<Type>().GetOffset();
 			return *reinterpret_cast<typename VertexLayout::Map<Type>::SysType*>(pAttribute);
 		}
 
 		template<typename T>
-		void SetAttributeByIndex(size_t i, T&& val) noexcept(!_DEBUG)
+		void SetAttributeByIndex(size_t i, T&& val) NOXND
 		{
 			const auto& element = m_Layout.ResolveByIndex(i);
 			auto pAttribute = m_pData + element.GetOffset();
@@ -275,7 +276,7 @@ namespace D3D11
 		}
 
 	protected:
-		Vertex(char* pData, const VertexLayout& layout) noexcept(!_DEBUG) :
+		Vertex(char* pData, const VertexLayout& layout) NOXND :
 			m_pData(pData),
 			m_Layout(layout)
 		{
@@ -284,14 +285,14 @@ namespace D3D11
 
 	private:
 		template<typename First, typename ...Rest>
-		void SetAttributeByIndex(size_t i, First&& first, Rest&&... rest) noexcept(!_DEBUG)
+		void SetAttributeByIndex(size_t i, First&& first, Rest&&... rest) NOXND
 		{
 			SetAttributeByIndex(i, std::forward<First>(first));
 			SetAttributeByIndex(i + 1, std::forward<Rest>(rest)...);
 		}
 
 		template<VertexLayout::ElementType DestLayoutTYpe, typename SrcType>
-		void SetAttribute(char* pAttribute, SrcType&& val) noexcept(!_DEBUG)
+		void SetAttribute(char* pAttribute, SrcType&& val) NOXND
 		{
 			using Dest = typename VertexLayout::Map<DestLayoutTYpe>::SysType;
 
@@ -313,12 +314,12 @@ namespace D3D11
 	class ConstVertex
 	{
 	public:
-		ConstVertex(const Vertex& v) noexcept(!_DEBUG) :
+		ConstVertex(const Vertex& v) NOXND :
 			m_Vertex(v)
 		{}
 
 		template<VertexLayout::ElementType Type>
-		const auto& Attr() const noexcept(!_DEBUG)
+		const auto& Attr() const NOXND
 		{
 			return const_cast<Vertex&>(m_Vertex).Attr<Type>();
 		}
@@ -334,11 +335,11 @@ namespace D3D11
 	class VertexResource
 	{
 	public:
-		VertexResource(VertexLayout layout) noexcept(!_DEBUG) :
+		VertexResource(VertexLayout layout) NOXND :
 			m_Layout(std::move(layout))
 		{}
 
-		const char* GetData() const noexcept(!_DEBUG)
+		const char* GetData() const NOXND
 		{
 			return m_Buffer.data();
 		}
@@ -348,18 +349,18 @@ namespace D3D11
 			return m_Layout;
 		}
 
-		size_t Size() const noexcept(!_DEBUG)
+		size_t Size() const NOXND
 		{
 			return m_Buffer.size() / m_Layout.Size();
 		}
 
-		size_t SizeBytes() const noexcept(!_DEBUG)
+		size_t SizeBytes() const NOXND
 		{
 			return m_Buffer.size();
 		}
 
 		template<typename ...Params>
-		void EmplaceBack(Params&&... params) noexcept(!_DEBUG)
+		void EmplaceBack(Params&&... params) NOXND
 		{
 			assert(sizeof...(params) == m_Layout.GetElementCount() && "Param count does not match number of vertex elements");
 
@@ -367,36 +368,36 @@ namespace D3D11
 			Back().SetAttributeByIndex(0u, std::forward<Params>(params)...);
 		}
 
-		Vertex Back() noexcept(!_DEBUG)
+		Vertex Back() NOXND
 		{
 			assert(m_Buffer.size() != 0u);
 
 			return Vertex{ m_Buffer.data() + m_Buffer.size() - m_Layout.Size(), m_Layout };
 		}
 
-		Vertex Front() noexcept(!_DEBUG)
+		Vertex Front() NOXND
 		{
 			assert(m_Buffer.size() != 0u);
 
 			return Vertex{ m_Buffer.data(), m_Layout };
 		}
 
-		Vertex operator[](size_t i) noexcept(!_DEBUG)
+		Vertex operator[](size_t i) NOXND
 		{
 			assert(i < Size());
 
 			return Vertex{ m_Buffer.data() + m_Layout.Size() * i, m_Layout };
 		}
 
-		ConstVertex Back() const noexcept(!_DEBUG)
+		ConstVertex Back() const NOXND
 		{
 			return const_cast<VertexResource*>(this)->Back();
 		}
-		ConstVertex Front() const noexcept(!_DEBUG)
+		ConstVertex Front() const NOXND
 		{
 			return const_cast<VertexResource*>(this)->Front();
 		}
-		ConstVertex operator[](size_t i) const noexcept(!_DEBUG)
+		ConstVertex operator[](size_t i) const NOXND
 		{
 			return const_cast<VertexResource&>(*this)[i];
 		}

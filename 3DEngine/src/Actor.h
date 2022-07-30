@@ -1,6 +1,7 @@
 #pragma once
 
 #include "D3D11Core.h"
+#include "Macros.h"
 
 #include <memory>
 #include <vector>
@@ -26,10 +27,10 @@ public:
 	virtual DirectX::XMMATRIX GetTransform() const noexcept = 0;
 
 	virtual void Update(float dt) noexcept = 0;
-	void Draw(D3D11::D3D11Core& gfx) const noexcept(!_DEBUG);
+	void Draw(D3D11::D3D11Core& gfx) const NOXND;
 
 protected:
-	void AddBind(std::unique_ptr<D3D11::Bindable> bind) noexcept(!_DEBUG);
+	void AddBind(std::unique_ptr<D3D11::Bindable> bind) NOXND;
 	void AddIndexBuffer(std::unique_ptr<D3D11::IndexBuffer> ibuf) noexcept;
 
 private:

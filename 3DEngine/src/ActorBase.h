@@ -9,14 +9,14 @@ class ActorBase : public Actor
 protected:
 	static bool IsStaticInitialized() noexcept { return !m_StaticBinds.empty(); }
 
-	static void AddStaticBind(std::unique_ptr<D3D11::Bindable> bind) noexcept(!_DEBUG)
+	static void AddStaticBind(std::unique_ptr<D3D11::Bindable> bind) NOXND
 	{
 		assert(typeid(*bind) != typeid(D3D11::IndexBuffer) && "MUST use AddIndexBuffer to bind a valid index buffer");
 
 		m_StaticBinds.push_back(std::move(bind));
 	}
 
-	void AddStaticIndexBuffer(std::unique_ptr<D3D11::IndexBuffer> ibuf) noexcept(!_DEBUG)
+	void AddStaticIndexBuffer(std::unique_ptr<D3D11::IndexBuffer> ibuf) NOXND
 	{
 		assert(m_IndexBuffer == nullptr && "You must only add one index buffer for each actor on your scene");
 
@@ -24,7 +24,7 @@ protected:
 		m_StaticBinds.push_back(std::move(ibuf));
 	}
 
-	void SetIndexFromStatic() noexcept(!_DEBUG)
+	void SetIndexFromStatic() NOXND
 	{
 		assert(m_IndexBuffer == nullptr && "Attempting to add index buffer a second time");
 
