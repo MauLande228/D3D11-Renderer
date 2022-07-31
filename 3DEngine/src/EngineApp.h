@@ -2,11 +2,11 @@
 #include "Timer.h"
 #include "Primitives/Box.h"
 #include "Primitives/Sphere.h"
-#include "Model.h"
 #include "ImGuiManager.h"
 #include "Actor.h"
 #include "Camera.h"
 #include "PointLight.h"
+#include "Mesh.h"
 
 constexpr float PI = 3.14159265f;
 
@@ -32,6 +32,7 @@ namespace Engine
 		~EngineApp();
 
 		void Draw();
+		void ShowModelWindow();
 
 	private:
 		ImGuiManager m_ImGui{};
@@ -42,7 +43,16 @@ namespace Engine
 
 		PointLight m_PointLight;
 
-		std::vector<std::unique_ptr<Actor>> m_Actors;
-		static constexpr size_t nActors = 80;
+		Model nano{ m_Window.Gfx(), "models/nanosuit.obj" };
+
+		struct
+		{
+			float roll = 0.0f;
+			float pitch = 0.0f;
+			float yaw = 0.0f;
+			float x = 0.0f;
+			float y = 0.0f;
+			float z = 0.0f;
+		} pos;
 	};
 }

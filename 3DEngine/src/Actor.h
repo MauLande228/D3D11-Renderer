@@ -26,7 +26,7 @@ public:
 
 	virtual DirectX::XMMATRIX GetTransform() const noexcept = 0;
 
-	virtual void Update(float dt) noexcept = 0;
+	virtual void Update(float dt) noexcept {}
 	void Draw(D3D11::D3D11Core& gfx) const NOXND;
 
 protected:
