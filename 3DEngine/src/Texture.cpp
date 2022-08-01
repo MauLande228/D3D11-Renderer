@@ -1,12 +1,11 @@
 #include "Texture.h"
 #include "stb_image.h"
 
-D3D11::Texture::Texture(D3D11Core& gfx, const std::string& filePath)
+D3D11::Texture::Texture(D3D11Core& gfx, const std::string& filePath, unsigned int slot) :
+	m_Slot(slot)
 {
-	stbi_set_flip_vertically_on_load(true);
-
 	int width, height, numCh;
-	unsigned char* imgBuffer = stbi_load(filePath.c_str(), &width, &height, &numCh, 4);
+	unsigned char* imgBuffer = stbi_load(filePath.c_str(), &width, &height, &numCh, STBI_rgb_alpha);
 	
 	D3D11_TEXTURE2D_DESC texDesc{};
 	texDesc.Width = width;
@@ -37,5 +36,5 @@ D3D11::Texture::Texture(D3D11Core& gfx, const std::string& filePath)
 
 void D3D11::Texture::Bind(D3D11Core& gfx) noexcept
 {
-	GetContext(gfx)->PSSetShaderResources(0u, 1u, m_TextureView.GetAddressOf());
+	GetContext(gfx)->PSSetShaderResources(m_Slot, 1u, m_TextureView.GetAddressOf());
 }

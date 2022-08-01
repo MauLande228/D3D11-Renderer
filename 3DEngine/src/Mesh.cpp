@@ -1,5 +1,7 @@
 #include "Mesh.h"
 
+#include <string>
+
 Mesh::Mesh(D3D11::D3D11Core& gfx, std::vector<std::unique_ptr<D3D11::Bindable>> bindPtrs)
 {
 	if (!IsStaticInitialized())
@@ -76,7 +78,7 @@ Model::Model(D3D11::D3D11Core& gfx, const std::string filePath)
 
 	for (size_t i = 0; i < pScene->mNumMeshes; i++)
 	{
-		m_MeshPtrs.push_back(ParseMesh(gfx, *pScene->mMeshes[i]));
+		m_MeshPtrs.push_back(ParseMesh(gfx, *pScene->mMeshes[i], pScene->mMaterials));
 	}
 
 	m_pRoot = ParseNode(*pScene->mRootNode);
@@ -87,23 +89,25 @@ void Model::Draw(D3D11::D3D11Core& gfx, DirectX::FXMMATRIX transform) const
 	m_pRoot->Draw(gfx, transform);
 }
 
-std::unique_ptr<Mesh> Model::ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh)
+std::unique_ptr<Mesh> Model::ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials)
 {
 	using D3D11::VertexLayout;
 
 	D3D11::VertexResource vbuf(std::move(
 		VertexLayout{}
 		.Append(VertexLayout::Position3D)
-		.Append(VertexLayout::Normal)));
+		.Append(VertexLayout::Normal)
+		.Append(VertexLayout::Texture2D)));
 
 	for (unsigned int i = 0; i < mesh.mNumVertices; i++)
 	{
 		vbuf.EmplaceBack(
 			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mVertices[i]),
-			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mNormals[i]));
+			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mNormals[i]),
+			*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i]));
 	}
 
-	std::vector<uint16_t> indices;
+	std::vector<unsigned short> indices;
 	indices.reserve(mesh.mNumFaces * 3);
 	for (unsigned int i = 0; i < mesh.mNumFaces; i++)
 	{
@@ -116,26 +120,61 @@ std::unique_ptr<Mesh> Model::ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh
 	}
 
 	std::vector<std::unique_ptr<D3D11::Bindable>> bindablePtrs;
+
+	bool hasSpecularMap = false;
+	float shininess = 35.0f;
+	if (mesh.mMaterialIndex >= 0)
+	{
+		auto& material = *pMaterials[mesh.mMaterialIndex];
+
+		using namespace std::string_literals;
+		const auto base = "models/nano_textured/"s;
+		aiString texFileName;
+
+		material.GetTexture(aiTextureType_DIFFUSE, 0, &texFileName);
+		bindablePtrs.push_back(std::make_unique<D3D11::Texture>(gfx, base + texFileName.C_Str()));
+
+		if (material.GetTexture(aiTextureType_SPECULAR, 0, &texFileName) == aiReturn_SUCCESS)
+		{
+			bindablePtrs.push_back(std::make_unique<D3D11::Texture>(gfx, base + texFileName.C_Str(), 1));
+			hasSpecularMap = true;
+		}
+		else
+		{
+			material.Get(AI_MATKEY_SHININESS, shininess);
+		}
+
+		bindablePtrs.push_back(std::make_unique<D3D11::Sampler>(gfx));
+	}
+
 	bindablePtrs.push_back(std::make_unique<D3D11::VertexBuffer>(gfx, vbuf));
+
 	bindablePtrs.push_back(std::make_unique<D3D11::IndexBuffer>(gfx, indices));
 
 	auto pvs = std::make_unique<D3D11::VertexShader>(gfx, L"PhongVS.cso");
 	auto pvsbc = pvs->GetByteCode();
-
 	bindablePtrs.push_back(std::move(pvs));
-	bindablePtrs.push_back(std::make_unique<D3D11::PixelShader>(gfx, L"PhongPS.cso"));
 
 	bindablePtrs.push_back(std::make_unique<D3D11::InputLayout>(gfx, vbuf.GetLayout().GetD3DLayout(), pvsbc));
 
-	struct PSMaterialConstant
+	if (hasSpecularMap)
 	{
-		DirectX::XMFLOAT3 color = { 0.6f, 0.6f, 0.8f };
-		float specularIntesity = 0.6f;
-		float speculatPower = 30.0f;
-		float padding[3];
-	}Pmc;
+		bindablePtrs.push_back(std::make_unique<D3D11::PixelShader>(gfx, L"PhongPSSpecMap.cso"));
+	}
+	else
+	{
+		bindablePtrs.push_back(std::make_unique<D3D11::PixelShader>(gfx, L"PhongPS.cso"));
 
-	bindablePtrs.push_back(std::make_unique<D3D11::PixelConstantBuffer<PSMaterialConstant>>(gfx, Pmc, 1u));
+		struct PSMaterialConstant
+		{
+			float specularIntensity = 0.8f;
+			float specularPower;
+			float padding[2];
+		} pmc;
+
+		pmc.specularPower = shininess;
+		bindablePtrs.push_back(std::make_unique<D3D11::PixelConstantBuffer<PSMaterialConstant>>(gfx, pmc, 1u));
+	}
 
 	return std::make_unique<Mesh>(gfx, std::move(bindablePtrs));
 }

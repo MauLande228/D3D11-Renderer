@@ -11,15 +11,19 @@ cbuffer Light
 
 cbuffer Object
 {
-    float3 MaterialColor;
     float SpecularIntensity;
     float SpecularPower;
+    float padding[2];
 };
+
+Texture2D tex;
+SamplerState splr;
 
 struct VsOut
 {
     float3 worldPos : POSITION;
     float3 normal : NORMAL;
+    float2 tc : TEXCOORD;
     float4 pos : SV_Position;
 };
 
@@ -44,5 +48,5 @@ float4 main(VsOut vsin) : SV_TARGET
     const float3 specular = att * (DiffuseColor * DiffuseIntensity) * SpecularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(vsin.worldPos))), SpecularPower);
     
     // Final color
-    return float4(saturate((diffuse + Ambient + specular) * MaterialColor), 1.0f);
+    return float4(saturate((diffuse + Ambient) * tex.Sample(splr, vsin.tc).rgb + specular), 1.0f);
 }

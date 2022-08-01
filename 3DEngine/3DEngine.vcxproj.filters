@@ -260,6 +260,7 @@
     <FxCompile Include="shaders\PhongPS.hlsl" />
     <FxCompile Include="shaders\LightBulbVS.hlsl" />
     <FxCompile Include="shaders\LightBulbPS.hlsl" />
+    <FxCompile Include="shaders\PhongPSSpecMap.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\brick.png">

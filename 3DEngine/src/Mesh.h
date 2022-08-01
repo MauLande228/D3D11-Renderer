@@ -45,7 +45,7 @@ public:
 	void Draw(D3D11::D3D11Core& gfx, DirectX::FXMMATRIX transform) const;
 
 private:
-	static std::unique_ptr<Mesh> ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh);
+	static std::unique_ptr<Mesh> ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials);
 	std::unique_ptr<Node> ParseNode(const aiNode& node);
 
 private:
