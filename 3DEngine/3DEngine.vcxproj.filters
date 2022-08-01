@@ -266,5 +266,8 @@
     <Image Include="textures\brick.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="models\nano_suit\glass_dif.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
