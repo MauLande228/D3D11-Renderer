@@ -13,7 +13,7 @@ namespace Engine
 	EngineApp::EngineApp() :
 		m_PointLight(m_Window.Gfx())
 	{
-		m_Window.Gfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 50.0f));
+		m_Window.Gfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 50.0f));
 	}
 
 	EngineApp::~EngineApp()
@@ -34,7 +34,7 @@ namespace Engine
 			if (!m_Timer.IsStopped())
 			{
 				CalculateFrameStats();
-				Draw();
+				Draw(m_Timer.DeltaTime());
 			}
 			else
 			{
@@ -69,7 +69,7 @@ namespace Engine
 		}
 	}
 
-	void EngineApp::Draw()
+	void EngineApp::Draw(float dt)
 	{
 		m_Window.Gfx().BeginFrame(DirectX::Colors::Black);
 		m_Window.Gfx().SetCamera(m_Camera.GetMatrix());
@@ -81,6 +81,58 @@ namespace Engine
 		nano.Draw(m_Window.Gfx(), transform);
 
 		m_PointLight.Draw(m_Window.Gfx());
+
+		while (const auto e = m_Window.m_KeyBoard.ReadKey())
+		{
+			if (e->IsPress() && e->GetCode() == VK_ESCAPE)
+			{
+				if (m_Window.CursorEnabled())
+				{
+					m_Window.DisableCursor();
+					m_Window.m_Mouse.EnableRaw();
+				}
+				else
+				{
+					m_Window.EnableCursor();
+					m_Window.m_Mouse.DisableRaw();
+				}
+			}
+		}
+		if (!m_Window.CursorEnabled())
+		{
+			if (m_Window.m_KeyBoard.KeyIsPressed('W'))
+			{
+				m_Camera.Translate({ 0.0f, 0.0f, dt });
+			}
+			if (m_Window.m_KeyBoard.KeyIsPressed('A'))
+			{
+				m_Camera.Translate({ -dt, 0.0f, 0.0f });
+			}
+			if (m_Window.m_KeyBoard.KeyIsPressed('S'))
+			{
+				m_Camera.Translate({ 0.0f, 0.0f, -dt });
+			}
+			if (m_Window.m_KeyBoard.KeyIsPressed('D'))
+			{
+				m_Camera.Translate({ dt, 0.0f, 0.0f });
+			}
+			if (m_Window.m_KeyBoard.KeyIsPressed('E'))
+			{
+				m_Camera.Translate({ 0.0f, dt, 0.0f });
+			}
+			if (m_Window.m_KeyBoard.KeyIsPressed('Q'))
+			{
+				m_Camera.Translate({ 0.0f, -dt, 0.0f });
+			}
+		}
+
+		while (const auto delta = m_Window.m_Mouse.ReadRawDelta())
+		{
+			if (!m_Window.CursorEnabled())
+			{
+				m_Camera.Rotate((float)delta->x, (float)delta->y);
+			}
+		}
 
 		m_Camera.SpawnControlWindow();
 		m_PointLight.SpawnControlWindow();

@@ -70,7 +70,9 @@ Model::Model(D3D11::D3D11Core& gfx, const std::string filePath)
 	const auto pScene = importer.ReadFile(
 		filePath.c_str(),
 		aiProcess_Triangulate |
-		aiProcess_JoinIdenticalVertices);
+		aiProcess_JoinIdenticalVertices |
+		aiProcess_ConvertToLeftHanded |
+		aiProcess_GenNormals);
 
 	for (size_t i = 0; i < pScene->mNumMeshes; i++)
 	{

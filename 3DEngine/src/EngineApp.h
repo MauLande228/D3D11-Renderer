@@ -31,19 +31,19 @@ namespace Engine
 		EngineApp& operator=(const EngineApp&&) = delete;
 		~EngineApp();
 
-		void Draw();
+		void Draw(float dt);
 		void ShowModelWindow();
 
 	private:
 		ImGuiManager m_ImGui{};
 
-		Window	m_Window{ 800, 600, L"D3D12 Renderer" };
+		Window	m_Window{ 1280, 720, L"D3D12 Renderer" };
 		Camera	m_Camera{};
 		Timer	m_Timer{};
 
 		PointLight m_PointLight;
 
-		Model nano{ m_Window.Gfx(), "models/nanosuit.obj" };
+		Model nano{ m_Window.Gfx(), "models/nano.gltf" };
 
 		struct
 		{

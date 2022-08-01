@@ -63,18 +63,31 @@ public:
 	static std::optional<int> ProcessMessages() noexcept;
 	D3D11::D3D11Core& Gfx();
 
+	void EnableCursor();
+	void DisableCursor();
+	bool CursorEnabled() const noexcept;
+
 private:
 	static LRESULT WINAPI HandleMsgSetup(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	static LRESULT WINAPI HandleMsg(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+	void HideCursor();
+	void ShowCursor();
+	void EnableImGuiMouse() noexcept;
+	void DisableImGuiMouse() noexcept;
+	void ConfineCursor() noexcept;
+	void FreeCursor() noexcept;
+
 private:
-	int				m_Width;
-	int				m_Height;
-	HWND			m_HWnd;
-	std::wstring	m_WndTitle;
-	RECT			m_WindowRect;
-	bool			m_Fullscreen;
+	int					m_Width;
+	int					m_Height;
+	HWND				m_HWnd;
+	std::wstring		m_WndTitle;
+	RECT				m_WindowRect;
+	bool				m_Fullscreen;
+	bool				m_CursorEnabled = false;
+	std::vector<BYTE>	m_RawBuffer;
 
 public:
 	std::unique_ptr<D3D11::D3D11Core> m_D3D11App;
