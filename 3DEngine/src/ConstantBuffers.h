@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Bindable.h"
+#include "ResourcePool.h"
 
 namespace D3D11
 {
@@ -69,6 +70,32 @@ namespace D3D11
 		{
 			GetContext(gfx)->VSSetConstantBuffers(m_Slot, 1u, m_ConstantBuffer.GetAddressOf());
 		}
+
+		static std::shared_ptr<VertexConstantBuffer> Resolve(D3D11Core& gfx, const T& consts, UINT slot = 0)
+		{
+			return Pool::Resolve<VertexConstantBuffer>(gfx, consts, slot);
+		}
+
+		static std::shared_ptr<VertexConstantBuffer> Resolve(D3D11Core& gfx, UINT slot = 0)
+		{
+			return Pool::Resolve<VertexConstantBuffer>(gfx, slot);
+		}
+
+		static std::string GenerateUID(const T&, UINT slot)
+		{
+			return GenerateUID(slot);
+		}
+
+		static std::string GenerateUID(UINT slot = 0)
+		{
+			using namespace std::string_literals;
+			return typeid(VertexConstantBuffer).name() + "#"s + std::to_string(slot);
+		}
+
+		std::string GetUID() const noexcept override
+		{
+			return GenerateUID(m_Slot);
+		}
 	};
 
 	template<class T>
@@ -84,6 +111,32 @@ namespace D3D11
 		void Bind(D3D11Core& gfx) noexcept override
 		{
 			GetContext(gfx)->PSSetConstantBuffers(m_Slot, 1u, m_ConstantBuffer.GetAddressOf());
+		}
+
+		static std::shared_ptr<PixelConstantBuffer> Resolve(D3D11Core& gfx, const T& consts, UINT slot = 0)
+		{
+			return Pool::Resolve<PixelConstantBuffer>(gfx, consts, slot);
+		}
+
+		static std::shared_ptr<PixelConstantBuffer> Resolve(D3D11Core& gfx, UINT slot = 0)
+		{
+			return Pool::Resolve<PixelConstantBuffer>(gfx, slot);
+		}
+
+		static std::string GenerateUID(const T&, UINT slot)
+		{
+			return GenerateUID(slot);
+		}
+
+		static std::string GenerateUID(UINT slot = 0)
+		{
+			using namespace std::string_literals;
+			return typeid(PixelConstantBuffer).name() + "#"s + std::to_string(slot);
+		}
+
+		std::string GetUID() const noexcept override
+		{
+			return GenerateUID(m_Slot);
 		}
 	};
 }

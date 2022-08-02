@@ -75,9 +75,6 @@
     <ClInclude Include="src\BindableBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ActorBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Geometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -142,6 +139,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Macros.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ResourcePool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IndexedTriangleList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Primitives\SphereGen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

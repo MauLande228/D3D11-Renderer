@@ -1,7 +1,14 @@
 #include "IndexBuffer.h"
+#include "ResourcePool.h"
 
 D3D11::IndexBuffer::IndexBuffer(D3D11Core& gfx, const std::vector<uint16_t>& indices) :
-	m_Count((uint32_t)indices.size())
+	IndexBuffer(gfx, "?", indices)
+{
+}
+
+D3D11::IndexBuffer::IndexBuffer(D3D11Core& gfx, std::string tag, const std::vector<uint16_t>& indices) :
+	m_Tag(tag),
+	m_Count((UINT)indices.size())
 {
 	D3D11_BUFFER_DESC iBufferDesc{};
 	iBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
@@ -24,4 +31,24 @@ void D3D11::IndexBuffer::Bind(D3D11Core& gfx) noexcept
 uint32_t D3D11::IndexBuffer::GetCount() const noexcept
 {
 	return m_Count;
+}
+
+std::shared_ptr<D3D11::IndexBuffer> D3D11::IndexBuffer::Resolve(
+	D3D11Core& gfx,
+	const std::string& tag,
+	const std::vector<uint16_t>& indices)
+{
+	assert(tag != "?");
+	return Pool::Resolve<D3D11::IndexBuffer>(gfx, tag, indices);
+}
+
+std::string D3D11::IndexBuffer::GetUID() const noexcept
+{
+	return GenerateUID_(m_Tag);
+}
+
+std::string D3D11::IndexBuffer::GenerateUID_(const std::string& tag)
+{
+	using namespace std::string_literals;
+	return typeid(D3D11::IndexBuffer).name() + "#"s + tag;
 }

@@ -1,4 +1,5 @@
 #include "Sampler.h"
+#include "ResourcePool.h"
 
 D3D11::Sampler::Sampler(D3D11Core& gfx)
 {
@@ -14,4 +15,19 @@ D3D11::Sampler::Sampler(D3D11Core& gfx)
 void D3D11::Sampler::Bind(D3D11Core& gfx) noexcept
 {
 	GetContext(gfx)->PSSetSamplers(0, 1, m_Sampler.GetAddressOf());
+}
+
+std::shared_ptr<D3D11::Sampler> D3D11::Sampler::Resolve(D3D11Core& gfx)
+{
+	return Pool::Resolve<D3D11::Sampler>(gfx);
+}
+
+std::string D3D11::Sampler::GenerateUID()
+{
+	return typeid(D3D11::Sampler).name();
+}
+
+std::string D3D11::Sampler::GetUID() const noexcept
+{
+	return GenerateUID();
 }

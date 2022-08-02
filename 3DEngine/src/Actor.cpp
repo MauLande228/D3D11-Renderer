@@ -10,25 +10,18 @@ void Actor::Draw(D3D11::D3D11Core& gfx) const NOXND
 	{
 		b->Bind(gfx);
 	}
-	for (auto& b : GetStaticBinds())
-	{
-		b->Bind(gfx);
-	}
 
 	gfx.DrawIndexed(m_IndexBuffer->GetCount());
 }
 
-void Actor::AddBind(std::unique_ptr<D3D11::Bindable> bind) NOXND
+void Actor::AddBind(std::shared_ptr<D3D11::Bindable> bind) NOXND
 {
-	assert(typeid(*bind) != typeid(D3D11::IndexBuffer) && "MUST use AddIndexBuffer to bind a valid index buffer");
+	if (typeid(*bind) == typeid(D3D11::IndexBuffer))
+	{
+		assert("Binding multiple index buffers not allowed" && m_IndexBuffer == nullptr);
+		m_IndexBuffer = &static_cast<D3D11::IndexBuffer&>(*bind);
+	}
 
 	m_Binds.push_back(std::move(bind));
 }
 
-void Actor::AddIndexBuffer(std::unique_ptr<D3D11::IndexBuffer> ibuf) noexcept
-{
-	assert(m_IndexBuffer == nullptr && "You must only add one index buffer for each actor on your scene");
-
-	m_IndexBuffer = ibuf.get();
-	m_Binds.push_back(std::move(ibuf));
-}

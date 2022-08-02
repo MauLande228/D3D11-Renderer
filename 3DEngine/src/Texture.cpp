@@ -1,7 +1,9 @@
 #include "Texture.h"
+#include "ResourcePool.h"
 #include "stb_image.h"
 
 D3D11::Texture::Texture(D3D11Core& gfx, const std::string& filePath, unsigned int slot) :
+	m_FilePath(filePath),
 	m_Slot(slot)
 {
 	int width, height, numCh;
@@ -37,4 +39,20 @@ D3D11::Texture::Texture(D3D11Core& gfx, const std::string& filePath, unsigned in
 void D3D11::Texture::Bind(D3D11Core& gfx) noexcept
 {
 	GetContext(gfx)->PSSetShaderResources(m_Slot, 1u, m_TextureView.GetAddressOf());
+}
+
+std::shared_ptr<D3D11::Texture> D3D11::Texture::Resolve(D3D11Core& gfx, const std::string& filePath, UINT slot)
+{
+	return Pool::Resolve<D3D11::Texture>(gfx, filePath, slot);
+}
+
+std::string D3D11::Texture::GenerateUID(const std::string& filePath, UINT slot)
+{
+	using namespace std::string_literals;
+	return typeid(D3D11::Texture).name() + "#"s + filePath + "#" + std::to_string(slot);
+}
+
+std::string D3D11::Texture::GetUID() const noexcept
+{
+	return GenerateUID(m_FilePath, m_Slot);
 }

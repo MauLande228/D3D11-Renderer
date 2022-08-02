@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../ActorBase.h"
+/*#include "../ActorBase.h"
 #include "../Geometry.h"
 #include "../BaseGameObject.h"
 #include "../Math.h"
@@ -31,4 +31,4 @@ private:
 private:
 	DirectX::XMFLOAT4X4 m_Transform = Math::Identity4x4();
 	Geometry			m_GeoGen;
-};
+};*/

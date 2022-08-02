@@ -79,6 +79,7 @@ namespace Engine
 		const auto transform = DirectX::XMMatrixRotationRollPitchYaw(pos.roll, pos.pitch, pos.yaw) *
 			DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
 		nano.Draw(m_Window.Gfx(), transform);
+		nano2.Draw(m_Window.Gfx(), transform);
 
 		m_PointLight.Draw(m_Window.Gfx());
 
@@ -134,9 +135,11 @@ namespace Engine
 			}
 		}
 
+		nano.ShowWindow("Model 1");
+		nano2.ShowWindow("Model 2");
 		m_Camera.SpawnControlWindow();
 		m_PointLight.SpawnControlWindow();
-		ShowModelWindow();
+		//ShowModelWindow();
 
 		m_Window.Gfx().EndFrame();
 	}

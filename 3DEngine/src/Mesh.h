@@ -1,6 +1,5 @@
 #pragma once
 
-#include "ActorBase.h"
 #include "BindableBase.h"
 #include "DynamicVertex.h"
 
@@ -8,10 +7,10 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-class Mesh : public ActorBase<Mesh>
+class Mesh : public Actor
 {
 public:
-	Mesh(D3D11::D3D11Core& gfx, std::vector<std::unique_ptr<D3D11::Bindable>> bindPtrs);
+	Mesh(D3D11::D3D11Core& gfx, std::vector<std::shared_ptr<D3D11::Bindable>> bindPtrs);
 
 	void Draw(D3D11::D3D11Core& gfx, DirectX::FXMMATRIX accumulatedTransform) const;
 	DirectX::XMMATRIX GetTransform() const noexcept override;
@@ -43,10 +42,21 @@ public:
 	Model(D3D11::D3D11Core& gfx, const std::string filePath);
 
 	void Draw(D3D11::D3D11Core& gfx, DirectX::FXMMATRIX transform) const;
+	void ShowWindow(const char* windowName = nullptr) noexcept;
 
 private:
 	static std::unique_ptr<Mesh> ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials);
 	std::unique_ptr<Node> ParseNode(const aiNode& node);
+
+	struct
+	{
+		float roll = 0.0f;
+		float pitch = 0.0f;
+		float yaw = 0.0f;
+		float x = 0.0f;
+		float y = 0.0f;
+		float z = 0.0f;
+	} pos;
 
 private:
 	std::unique_ptr<Node> m_pRoot;

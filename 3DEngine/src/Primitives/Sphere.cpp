@@ -1,4 +1,4 @@
-#include "Sphere.h"
+/*#include "Sphere.h"
 #include "../BindableBase.h"
 
 using namespace D3D11;
@@ -52,4 +52,4 @@ Sphere::Sphere(D3D11Core& gfx,
 DirectX::XMMATRIX Sphere::GetTransform() const noexcept
 {
 	return DirectX::XMLoadFloat4x4(&m_Transform) * BaseGameObject::GetTransform();
-}
+}*/

@@ -1,28 +1,18 @@
 #include "Mesh.h"
+#include "../imgui/imgui.h"
 
 #include <string>
 
-Mesh::Mesh(D3D11::D3D11Core& gfx, std::vector<std::unique_ptr<D3D11::Bindable>> bindPtrs)
+Mesh::Mesh(D3D11::D3D11Core& gfx, std::vector<std::shared_ptr<D3D11::Bindable>> bindPtrs)
 {
-	if (!IsStaticInitialized())
-	{
-		AddStaticBind(std::make_unique<D3D11::Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-	}
+	AddBind(std::make_shared<D3D11::Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
 	for (auto& pb : bindPtrs)
 	{
-		if (auto pi = dynamic_cast<D3D11::IndexBuffer*>(pb.get()))
-		{
-			AddIndexBuffer(std::unique_ptr<D3D11::IndexBuffer>{pi});
-			pb.release();
-		}
-		else
-		{
-			AddBind(std::move(pb));
-		}
+		AddBind(std::move(pb));
 	}
 
-	AddBind(std::make_unique<D3D11::Transform>(gfx, *this));
+	AddBind(std::make_shared<D3D11::Transform>(gfx, *this));
 }
 
 void Mesh::Draw(D3D11::D3D11Core& gfx, DirectX::FXMMATRIX accumulatedTransform) const
@@ -86,7 +76,29 @@ Model::Model(D3D11::D3D11Core& gfx, const std::string filePath)
 
 void Model::Draw(D3D11::D3D11Core& gfx, DirectX::FXMMATRIX transform) const
 {
-	m_pRoot->Draw(gfx, transform);
+	const auto transformXM = DirectX::XMMatrixRotationRollPitchYaw(pos.roll, pos.pitch, pos.yaw) *
+		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
+
+	m_pRoot->Draw(gfx, transformXM);
+}
+
+void Model::ShowWindow(const char* windowName) noexcept
+{
+	if (ImGui::Begin(windowName))
+	{
+		using namespace std::string_literals;
+
+		ImGui::Text("Orientation");
+		ImGui::SliderAngle("Roll", &pos.roll, -180.0f, 180.0f);
+		ImGui::SliderAngle("Pitch", &pos.pitch, -180.0f, 180.0f);
+		ImGui::SliderAngle("Yaw", &pos.yaw, -180.0f, 180.0f);
+
+		ImGui::Text("Position");
+		ImGui::SliderFloat("X", &pos.x, -20.0f, 20.0f);
+		ImGui::SliderFloat("Y", &pos.y, -20.0f, 20.0f);
+		ImGui::SliderFloat("Z", &pos.z, -20.0f, 20.0f);
+	}
+	ImGui::End();
 }
 
 std::unique_ptr<Mesh> Model::ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials)
@@ -107,7 +119,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh
 			*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i]));
 	}
 
-	std::vector<unsigned short> indices;
+	std::vector<uint16_t> indices;
 	indices.reserve(mesh.mNumFaces * 3);
 	for (unsigned int i = 0; i < mesh.mNumFaces; i++)
 	{
@@ -119,7 +131,10 @@ std::unique_ptr<Mesh> Model::ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh
 		indices.push_back(face.mIndices[2]);
 	}
 
-	std::vector<std::unique_ptr<D3D11::Bindable>> bindablePtrs;
+	std::vector<std::shared_ptr<D3D11::Bindable>> bindablePtrs;
+
+	using namespace std::string_literals;
+	const auto base = "models/nano_textured/"s;
 
 	bool hasSpecularMap = false;
 	float shininess = 35.0f;
@@ -127,16 +142,14 @@ std::unique_ptr<Mesh> Model::ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh
 	{
 		auto& material = *pMaterials[mesh.mMaterialIndex];
 
-		using namespace std::string_literals;
-		const auto base = "models/nano_textured/"s;
 		aiString texFileName;
 
 		material.GetTexture(aiTextureType_DIFFUSE, 0, &texFileName);
-		bindablePtrs.push_back(std::make_unique<D3D11::Texture>(gfx, base + texFileName.C_Str()));
+		bindablePtrs.push_back(D3D11::Texture::Resolve(gfx, base + texFileName.C_Str()));
 
 		if (material.GetTexture(aiTextureType_SPECULAR, 0, &texFileName) == aiReturn_SUCCESS)
 		{
-			bindablePtrs.push_back(std::make_unique<D3D11::Texture>(gfx, base + texFileName.C_Str(), 1));
+			bindablePtrs.push_back(D3D11::Texture::Resolve(gfx, base + texFileName.C_Str(), 1));
 			hasSpecularMap = true;
 		}
 		else
@@ -144,26 +157,28 @@ std::unique_ptr<Mesh> Model::ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh
 			material.Get(AI_MATKEY_SHININESS, shininess);
 		}
 
-		bindablePtrs.push_back(std::make_unique<D3D11::Sampler>(gfx));
+		bindablePtrs.push_back(D3D11::Sampler::Resolve(gfx));
 	}
 
-	bindablePtrs.push_back(std::make_unique<D3D11::VertexBuffer>(gfx, vbuf));
+	auto meshTag = base + "%" + mesh.mName.C_Str();
 
-	bindablePtrs.push_back(std::make_unique<D3D11::IndexBuffer>(gfx, indices));
+	bindablePtrs.push_back(D3D11::VertexBuffer::Resolve(gfx, meshTag, vbuf));
 
-	auto pvs = std::make_unique<D3D11::VertexShader>(gfx, L"PhongVS.cso");
+	bindablePtrs.push_back(D3D11::IndexBuffer::Resolve(gfx, meshTag, indices));
+
+	auto pvs = D3D11::VertexShader::Resolve(gfx, "PhongVS.cso");
 	auto pvsbc = pvs->GetByteCode();
 	bindablePtrs.push_back(std::move(pvs));
 
-	bindablePtrs.push_back(std::make_unique<D3D11::InputLayout>(gfx, vbuf.GetLayout().GetD3DLayout(), pvsbc));
+	bindablePtrs.push_back(D3D11::InputLayout::Resolve(gfx, vbuf.GetLayout(), pvsbc));
 
 	if (hasSpecularMap)
 	{
-		bindablePtrs.push_back(std::make_unique<D3D11::PixelShader>(gfx, L"PhongPSSpecMap.cso"));
+		bindablePtrs.push_back(D3D11::PixelShader::Resolve(gfx, "PhongPSSpecMap.cso"));
 	}
 	else
 	{
-		bindablePtrs.push_back(std::make_unique<D3D11::PixelShader>(gfx, L"PhongPS.cso"));
+		bindablePtrs.push_back(D3D11::PixelShader::Resolve(gfx, "PhongPS.cso"));
 
 		struct PSMaterialConstant
 		{
@@ -173,7 +188,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh
 		} pmc;
 
 		pmc.specularPower = shininess;
-		bindablePtrs.push_back(std::make_unique<D3D11::PixelConstantBuffer<PSMaterialConstant>>(gfx, pmc, 1u));
+		bindablePtrs.push_back(D3D11::PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx, pmc, 1u));
 	}
 
 	return std::make_unique<Mesh>(gfx, std::move(bindablePtrs));

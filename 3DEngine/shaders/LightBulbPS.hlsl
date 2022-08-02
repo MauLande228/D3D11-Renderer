@@ -1,9 +1,9 @@
 cbuffer CBuf
 {
-    float4 Color;
+    float4 color;
 };
 
-float4 main() : SV_TARGET
+float4 main() : SV_Target
 {
-    return Color;
+    return color;
 }

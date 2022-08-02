@@ -155,9 +155,9 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\DynamicVertex.h" />
     <ClInclude Include="src\Geometry.h" />
-    <ClInclude Include="src\ActorBase.h" />
     <ClInclude Include="src\BindableBase.h" />
     <ClInclude Include="src\ImGuiManager.h" />
+    <ClInclude Include="src\IndexedTriangleList.h" />
     <ClInclude Include="src\Macros.h" />
     <ClInclude Include="src\Math.h" />
     <ClInclude Include="src\Mesh.h" />
@@ -176,6 +176,8 @@
     <ClInclude Include="src\Keyboard.h" />
     <ClInclude Include="src\Primitives\LightBulb.h" />
     <ClInclude Include="src\Primitives\Sphere.h" />
+    <ClInclude Include="src\Primitives\SphereGen.h" />
+    <ClInclude Include="src\ResourcePool.h" />
     <ClInclude Include="src\Sampler.h" />
     <ClInclude Include="src\stb_image.h" />
     <ClInclude Include="src\Texture.h" />

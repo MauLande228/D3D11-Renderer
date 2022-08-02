@@ -1,4 +1,4 @@
-#include "Box.h"
+/*#include "Box.h"
 #include "../BindableBase.h"
 
 using namespace D3D11;
@@ -52,4 +52,4 @@ Box::Box(D3D11Core& gfx,
 DirectX::XMMATRIX Box::GetTransform() const noexcept
 {
 	return DirectX::XMLoadFloat4x4(&m_Transform) * BaseGameObject::GetTransform();
-}
+}*/

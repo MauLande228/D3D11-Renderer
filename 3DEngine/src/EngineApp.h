@@ -44,6 +44,7 @@ namespace Engine
 		PointLight m_PointLight;
 
 		Model nano{ m_Window.Gfx(), "models/nano_textured/nanosuit.obj" };
+		Model nano2{ m_Window.Gfx(), "models/nano_textured/nanosuit.obj" };
 
 		struct
 		{

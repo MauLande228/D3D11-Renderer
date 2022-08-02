@@ -41,6 +41,7 @@ namespace D3D11
 			using SysType = DirectX::XMFLOAT2;
 			static constexpr DXGI_FORMAT DxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
 			static constexpr const char* Semantic = "POSITION";
+			static constexpr const char* Code = "P2";
 		};
 
 		template<> struct Map<Position3D>
@@ -48,6 +49,7 @@ namespace D3D11
 			using SysType = DirectX::XMFLOAT3;
 			static constexpr DXGI_FORMAT DxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* Semantic = "POSITION";
+			static constexpr const char* Code = "P3";
 		};
 
 		template<> struct Map<Texture2D>
@@ -55,6 +57,7 @@ namespace D3D11
 			using SysType = DirectX::XMFLOAT2;
 			static constexpr DXGI_FORMAT DxgiFormat = DXGI_FORMAT_R32G32_FLOAT;
 			static constexpr const char* Semantic = "TEXCOORD";
+			static constexpr const char* Code = "T2";
 		};
 
 		template<> struct Map<Normal>
@@ -62,6 +65,7 @@ namespace D3D11
 			using SysType = DirectX::XMFLOAT3;
 			static constexpr DXGI_FORMAT DxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* Semantic = "NORMAL";
+			static constexpr const char* Code = "N";
 		};
 
 		template<> struct Map<Float3Color>
@@ -69,6 +73,7 @@ namespace D3D11
 			using SysType = DirectX::XMFLOAT3;
 			static constexpr DXGI_FORMAT DxgiFormat = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* Semantic = "COLOR";
+			static constexpr const char* Code = "C3";
 		};
 
 		template<> struct Map<Float4Color>
@@ -76,6 +81,7 @@ namespace D3D11
 			using SysType = DirectX::XMFLOAT4;
 			static constexpr DXGI_FORMAT DxgiFormat = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			static constexpr const char* Semantic = "COLOR";
+			static constexpr const char* Code = "C4";
 		};
 
 		template<> struct Map<BGRAColor>
@@ -83,6 +89,7 @@ namespace D3D11
 			using SysType = D3D11::BGRAColor;
 			static constexpr DXGI_FORMAT DxgiFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 			static constexpr const char* Semantic = "COLOR";
+			static constexpr const char* Code = "C8";
 		};
 
 		class Element
@@ -106,6 +113,29 @@ namespace D3D11
 			size_t Size() const NOXND
 			{
 				return SizeOf(m_Type);
+			}
+
+			const char* GetCode() const noexcept
+			{
+				switch (m_Type)
+				{
+				case Position2D:
+					return Map<Position2D>::Code;
+				case Position3D:
+					return Map<Position3D>::Code;
+				case Texture2D:
+					return Map<Texture2D>::Code;
+				case Normal:
+					return Map<Normal>::Code;
+				case Float3Color:
+					return Map<Float3Color>::Code;
+				case Float4Color:
+					return Map<Float4Color>::Code;
+				case BGRAColor:
+					return Map<BGRAColor>::Code;
+				}
+				assert("Invalid element type" && false);
+				return "Invalid";
 			}
 
 			static constexpr size_t SizeOf(ElementType type) NOXND
@@ -220,6 +250,16 @@ namespace D3D11
 			}
 
 			return desc;
+		}
+
+		std::string GetCode() const NOXND
+		{
+			std::string code;
+			for (const auto& e : m_Elements)
+			{
+				code += e.GetCode();
+			}
+			return code;
 		}
 
 	private:
