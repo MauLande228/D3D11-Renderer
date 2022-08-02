@@ -1,14 +1,13 @@
 #pragma once
 
-#include "../ActorBase.h"
+#include "../Actor.h"
 #include "../Geometry.h"
 
-class LightBulb : public ActorBase<LightBulb>
+class LightBulb : public Actor
 {
 public:
 	LightBulb(D3D11::D3D11Core& gfx, float radius);
 
-	void Update(float dt) noexcept override;
 	void SetPosition(DirectX::XMFLOAT3 pos) noexcept;
 	DirectX::XMMATRIX GetTransform() const noexcept override;
 
