@@ -175,6 +175,8 @@
     <ClInclude Include="src\Mouse.h" />
     <ClInclude Include="src\Keyboard.h" />
     <ClInclude Include="src\Primitives\LightBulb.h" />
+    <ClInclude Include="src\Primitives\Plane.h" />
+    <ClInclude Include="src\Primitives\PlaneGen.h" />
     <ClInclude Include="src\Primitives\Sphere.h" />
     <ClInclude Include="src\Primitives\SphereGen.h" />
     <ClInclude Include="src\ResourcePool.h" />
@@ -213,6 +215,7 @@
     <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\Keyboard.cpp" />
     <ClCompile Include="src\Primitives\LightBulb.cpp" />
+    <ClCompile Include="src\Primitives\Plane.cpp" />
     <ClCompile Include="src\Primitives\Sphere.cpp" />
     <ClCompile Include="src\Sampler.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
@@ -239,6 +242,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
     <FxCompile Include="shaders\PhongPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="shaders\PhongPSNormalMap.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>

@@ -7,6 +7,7 @@
 #include "Camera.h"
 #include "PointLight.h"
 #include "Mesh.h"
+#include "Primitives/Plane.h"
 
 constexpr float PI = 3.14159265f;
 
@@ -44,16 +45,6 @@ namespace Engine
 		PointLight m_PointLight;
 
 		Model nano{ m_Window.Gfx(), "models/nano_textured/nanosuit.obj" };
-		Model nano2{ m_Window.Gfx(), "models/nano_textured/nanosuit.obj" };
-
-		struct
-		{
-			float roll = 0.0f;
-			float pitch = 0.0f;
-			float yaw = 0.0f;
-			float x = 0.0f;
-			float y = 0.0f;
-			float z = 0.0f;
-		} pos;
+		Plane m_Plane;
 	};
 }

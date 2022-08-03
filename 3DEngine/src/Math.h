@@ -31,6 +31,12 @@ namespace Math
 		return val;
 	}
 
+	template <typename T>
+	constexpr auto sqPow(const T& x)
+	{
+		return x * x;
+	}
+
 	// Normalize a value in the range [min, max]
 	template<typename T, typename U>
 	inline T NormalizeRange(U x, U min, U max)

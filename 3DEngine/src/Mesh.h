@@ -41,7 +41,7 @@ class Model
 public:
 	Model(D3D11::D3D11Core& gfx, const std::string filePath);
 
-	void Draw(D3D11::D3D11Core& gfx, DirectX::FXMMATRIX transform) const;
+	void Draw(D3D11::D3D11Core& gfx) const;
 	void ShowWindow(const char* windowName = nullptr) noexcept;
 
 private:

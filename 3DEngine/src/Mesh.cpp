@@ -74,7 +74,7 @@ Model::Model(D3D11::D3D11Core& gfx, const std::string filePath)
 	m_pRoot = ParseNode(*pScene->mRootNode);
 }
 
-void Model::Draw(D3D11::D3D11Core& gfx, DirectX::FXMMATRIX transform) const
+void Model::Draw(D3D11::D3D11Core& gfx) const
 {
 	const auto transformXM = DirectX::XMMatrixRotationRollPitchYaw(pos.roll, pos.pitch, pos.yaw) *
 		DirectX::XMMatrixTranslation(pos.x, pos.y, pos.z);
