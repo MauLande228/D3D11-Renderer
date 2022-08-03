@@ -30,7 +30,7 @@ Plane::Plane(D3D11::D3D11Core& gfx, float size)
 
 	AddBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
-	AddBind(std::make_shared<Transform>(gfx, *this));
+	AddBind(std::make_shared<GlobalTransform>(gfx, *this, 0, 2));
 }
 
 void Plane::SetPos(DirectX::XMFLOAT3 pos) noexcept

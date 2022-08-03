@@ -12,12 +12,16 @@ namespace D3D11
 		
 		void Bind(D3D11Core& gfx) noexcept override;
 
-	private:
+	protected:
 		struct Transforms
 		{
 			DirectX::XMMATRIX model;
 			DirectX::XMMATRIX modelViewProj;
 		};
+
+	protected:
+		void UpdateBind(D3D11Core& gfx, const Transforms& tf) noexcept;
+		Transforms GetTransforms(D3D11Core& gfx) noexcept;
 
 	private:
 		const Actor& m_Parent;

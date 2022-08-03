@@ -156,6 +156,9 @@
     <ClInclude Include="src\Primitives\Plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\GlobalTransform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Window.cpp">
@@ -263,6 +266,9 @@
     <ClCompile Include="src\Primitives\Plane.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GlobalTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders\VertexShader.hlsl" />
@@ -277,6 +283,8 @@
     <FxCompile Include="shaders\LightBulbPS.hlsl" />
     <FxCompile Include="shaders\PhongPSSpecMap.hlsl" />
     <FxCompile Include="shaders\PhongPSNormalMap.hlsl" />
+    <FxCompile Include="shaders\PhongVSNormalMap.hlsl" />
+    <FxCompile Include="shaders\PhongPSSpecNormalMap.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\brick.png">

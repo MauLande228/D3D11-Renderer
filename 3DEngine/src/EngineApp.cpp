@@ -78,7 +78,7 @@ namespace Engine
 		m_PointLight.Bind(m_Window.Gfx(), m_Camera.GetMatrix());
 
 		nano.Draw(m_Window.Gfx());
-		m_Plane.Draw(m_Window.Gfx());
+		//m_Plane.Draw(m_Window.Gfx());
 		m_PointLight.Draw(m_Window.Gfx());
 
 		while (const auto e = m_Window.m_KeyBoard.ReadKey())
@@ -134,7 +134,7 @@ namespace Engine
 		}
 
 		nano.ShowWindow("Model 1");
-		m_Plane.SpawnControlWindow(m_Window.Gfx());
+		//m_Plane.SpawnControlWindow(m_Window.Gfx());
 		m_Camera.SpawnControlWindow();
 		m_PointLight.SpawnControlWindow();
 

@@ -64,7 +64,8 @@ Model::Model(D3D11::D3D11Core& gfx, const std::string filePath)
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices |
 		aiProcess_ConvertToLeftHanded |
-		aiProcess_GenNormals);
+		aiProcess_GenNormals |
+		aiProcess_CalcTangentSpace);
 
 	for (size_t i = 0; i < pScene->mNumMeshes; i++)
 	{
@@ -109,6 +110,8 @@ std::unique_ptr<Mesh> Model::ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh
 		VertexLayout{}
 		.Append(VertexLayout::Position3D)
 		.Append(VertexLayout::Normal)
+		.Append(VertexLayout::Tangent)
+		.Append(VertexLayout::Bitangent)
 		.Append(VertexLayout::Texture2D)));
 
 	for (unsigned int i = 0; i < mesh.mNumVertices; i++)
@@ -116,6 +119,8 @@ std::unique_ptr<Mesh> Model::ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh
 		vbuf.EmplaceBack(
 			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mVertices[i]),
 			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mNormals[i]),
+			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mTangents[i]),
+			*reinterpret_cast<DirectX::XMFLOAT3*>(&mesh.mBitangents[i]),
 			*reinterpret_cast<DirectX::XMFLOAT2*>(&mesh.mTextureCoords[0][i]));
 	}
 
@@ -157,6 +162,9 @@ std::unique_ptr<Mesh> Model::ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh
 			material.Get(AI_MATKEY_SHININESS, shininess);
 		}
 
+		material.GetTexture(aiTextureType_NORMALS, 0, &texFileName);
+		bindablePtrs.push_back(D3D11::Texture::Resolve(gfx, base + texFileName.C_Str(), 2));
+
 		bindablePtrs.push_back(D3D11::Sampler::Resolve(gfx));
 	}
 
@@ -166,7 +174,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh
 
 	bindablePtrs.push_back(D3D11::IndexBuffer::Resolve(gfx, meshTag, indices));
 
-	auto pvs = D3D11::VertexShader::Resolve(gfx, "PhongVS.cso");
+	auto pvs = D3D11::VertexShader::Resolve(gfx, "PhongVSNormalMap.cso");
 	auto pvsbc = pvs->GetByteCode();
 	bindablePtrs.push_back(std::move(pvs));
 
@@ -174,21 +182,31 @@ std::unique_ptr<Mesh> Model::ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh
 
 	if (hasSpecularMap)
 	{
-		bindablePtrs.push_back(D3D11::PixelShader::Resolve(gfx, "PhongPSSpecMap.cso"));
-	}
-	else
-	{
-		bindablePtrs.push_back(D3D11::PixelShader::Resolve(gfx, "PhongPS.cso"));
+		bindablePtrs.push_back(D3D11::PixelShader::Resolve(gfx, "PhongPSSpecNormalMap.cso"));
 
 		struct PSMaterialConstant
 		{
-			float specularIntensity = 0.8f;
+			BOOL normalMapEnabled = TRUE;
+			float padding[3];
+		}pmc;
+
+		//TODO: Check this later. Possible conflict
+		bindablePtrs.push_back(D3D11::PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx, pmc, 1));
+	}
+	else
+	{
+		bindablePtrs.push_back(D3D11::PixelShader::Resolve(gfx, "PhongPSNormalMap.cso"));
+
+		struct PSMaterialConstant
+		{
+			float specularIntensity = 0.18f;
 			float specularPower;
-			float padding[2];
+			BOOL normalMapEnabled = TRUE;
+			float padding[1];
 		} pmc;
 
 		pmc.specularPower = shininess;
-		bindablePtrs.push_back(D3D11::PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx, pmc, 1u));
+		bindablePtrs.push_back(D3D11::PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx, pmc, 1));
 	}
 
 	return std::make_unique<Mesh>(gfx, std::move(bindablePtrs));

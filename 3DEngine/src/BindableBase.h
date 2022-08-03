@@ -8,5 +8,6 @@
 #include "Texture.h"
 #include "Topology.h"
 #include "Transform.h"
+#include "GlobalTransform.h"
 #include "VertexBuffer.h"
 #include "VertexShader.h"
