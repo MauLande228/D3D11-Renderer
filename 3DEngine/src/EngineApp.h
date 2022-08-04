@@ -44,7 +44,7 @@ namespace Engine
 
 		PointLight m_PointLight;
 
-		Model nano{ m_Window.Gfx(), "models/nano_textured/nanosuit.obj" };
-		Plane m_Plane;
+		//Model nano{ m_Window.Gfx(), "models/nano_textured/nanosuit.obj" };
+		Model gobber{ m_Window.Gfx(), "models/gobber/GoblinX.obj" };
 	};
 }

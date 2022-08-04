@@ -24,8 +24,26 @@ class Node
 	friend class Model;
 public:
 	Node(std::vector<Mesh*> pMeshes, const DirectX::XMMATRIX& transform) NOXND;
-	
+
 	void Draw(D3D11::D3D11Core& gfx, DirectX::FXMMATRIX accumulatedTransfor) const NOXND;
+
+	struct PSMaterialConstantFullmonte
+	{
+		BOOL  normalMapEnabled = TRUE;
+		BOOL  specularMapEnabled = TRUE;
+		BOOL  hasGlossMap = FALSE;
+		float specularPower = 2.1f;
+		DirectX::XMFLOAT3 specularColor = { 0.75f,0.75f,0.75f };
+		float specularMapWeight = 0.671f;
+	};
+
+	struct PSMaterialConstantNotex
+	{
+		DirectX::XMFLOAT4 materialColor = { 0.447970f,0.327254f,0.176283f,1.0f };
+		DirectX::XMFLOAT4 specularColor = { 0.65f,0.65f,0.65f,1.0f };
+		float specularPower = 120.0f;
+		float padding[3];
+	};
 
 private:
 	void AddChild(std::unique_ptr<Node> pChild) NOXND;

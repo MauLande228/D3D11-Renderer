@@ -12,7 +12,11 @@ cbuffer LightCBuf
 cbuffer ObjectCBuf
 {
     bool NormalMapEnabled;
-    float padding[3];
+    bool specularMapEnabled;
+    bool hasGloss;
+    float specularPowerConst;
+    float3 specularColor;
+    float specularMapWeight;
 };
 
 struct PixelIn
@@ -66,9 +70,22 @@ float4 main(PixelIn input) : SV_TARGET
     const float3 r = w * 2.0f - vToL;
     
     // calculate specular intensity based on angle between viewing vector and reflection vector, narrow with power function
-    const float4 specularSample = spec.Sample(splr, input.tc);
-    const float3 specularReflectionColor = specularSample.rgb;
-    const float specularPower = pow(2.0f, specularSample.a * 13.0f);
+    float3 specularReflectionColor;
+    float specularPower = specularPowerConst;
+    if(specularMapEnabled)
+    {
+        const float4 specularSample = spec.Sample(splr, input.tc);
+        specularReflectionColor = specularSample.rgb * specularMapWeight;
+        if(hasGloss)
+        {
+            specularPower = pow(2.0f, specularSample.a * 13.0f);
+        }
+    }
+    else
+    {
+        specularReflectionColor = specularColor;
+    }
+    
     const float3 specular = att * (diffuseColor * diffuseIntensity) * pow(max(0.0f, dot(normalize(-r), normalize(input.viewPos))), specularPower);
     
     //Final color

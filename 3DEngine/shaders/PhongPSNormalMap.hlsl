@@ -17,12 +17,6 @@ cbuffer ObjCBuf
     float Padding[1];
 };
 
-cbuffer CBuf
-{
-    matrix modelView;
-    matrix modelViewProj;
-};
-
 struct PixelIn
 {
     float3 viewPos : POSITION;

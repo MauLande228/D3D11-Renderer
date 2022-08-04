@@ -7,8 +7,17 @@ D3D11::Texture::Texture(D3D11Core& gfx, const std::string& filePath, unsigned in
 	m_Slot(slot)
 {
 	int width, height, numCh;
-	unsigned char* imgBuffer = stbi_load(filePath.c_str(), &width, &height, &numCh, STBI_rgb_alpha);
+	unsigned char* imgBuffer = stbi_load(filePath.c_str(), &width, &height, &numCh, 4);
 	
+	if (numCh == 4)
+	{
+		m_HasAlpha = true;
+	}
+	else
+	{
+		m_HasAlpha = false;
+	}
+
 	D3D11_TEXTURE2D_DESC texDesc{};
 	texDesc.Width = width;
 	texDesc.Height = height;
@@ -55,4 +64,9 @@ std::string D3D11::Texture::GenerateUID(const std::string& filePath, UINT slot)
 std::string D3D11::Texture::GetUID() const noexcept
 {
 	return GenerateUID(m_FilePath, m_Slot);
+}
+
+bool D3D11::Texture::HasAlpha() const noexcept
+{
+	return m_HasAlpha;
 }

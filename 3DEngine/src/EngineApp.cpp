@@ -11,10 +11,8 @@
 namespace Engine
 {
 	EngineApp::EngineApp() :
-		m_PointLight(m_Window.Gfx()),
-		m_Plane(m_Window.Gfx(), 3.0f)
+		m_PointLight(m_Window.Gfx())
 	{
-		m_Plane.SetPos({ 1.0f, 17.0f, -1.0f });
 		m_Window.Gfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 50.0f));
 	}
 
@@ -77,8 +75,7 @@ namespace Engine
 		m_Window.Gfx().SetCamera(m_Camera.GetMatrix());
 		m_PointLight.Bind(m_Window.Gfx(), m_Camera.GetMatrix());
 
-		nano.Draw(m_Window.Gfx());
-		//m_Plane.Draw(m_Window.Gfx());
+		gobber.Draw(m_Window.Gfx());
 		m_PointLight.Draw(m_Window.Gfx());
 
 		while (const auto e = m_Window.m_KeyBoard.ReadKey())
@@ -133,8 +130,7 @@ namespace Engine
 			}
 		}
 
-		nano.ShowWindow("Model 1");
-		//m_Plane.SpawnControlWindow(m_Window.Gfx());
+		gobber.ShowWindow("Model 1");
 		m_Camera.SpawnControlWindow();
 		m_PointLight.SpawnControlWindow();
 
