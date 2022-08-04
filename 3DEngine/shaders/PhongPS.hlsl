@@ -1,13 +1,6 @@
-cbuffer Light
-{
-    float3 lightPos;
-    float3 Ambient;
-    float3 DiffuseColor;
-    float DiffuseIntensity;
-    float AttConst;
-    float AttLin;
-    float AttQuad;
-};
+#include "ShaderUtils.hlsli"
+#include "LightData.hlsli"
+#include "PointLight.hlsli"
 
 cbuffer Object
 {
@@ -19,9 +12,9 @@ cbuffer Object
 struct VsOut
 {
     float3 worldPos : POSITION;
-    float3 normal : NORMAL;
-    float2 tc : TEXCOORD;
-    float4 pos : SV_Position;
+    float3 normal   : NORMAL;
+    float2 tc       : TEXCOORD;
+    float4 pos      : SV_Position;
 };
 
 Texture2D tex;
@@ -29,24 +22,14 @@ SamplerState splr;
 
 float4 main(VsOut input) : SV_TARGET
 {
+    input.normal = normalize(input.normal);
+    
 	//Fragment to Light vector data
-    const float3 vToL = lightPos - input.worldPos;
-    const float distToL = length(vToL);
-    const float3 dirToL = vToL / distToL;
+    const LightVectorData lv = CalculateLightVectorData(viewLightPos, input.worldPos);
     
-    //Diffuse attenuation
-    const float att = 1.0f / (AttConst + AttLin * distToL + AttQuad * (distToL * distToL));
+    const float att = Attenuate(attConst, attLin, attQuad, lv.distToL);
+    const float3 diffuse = Diffuse(diffuseColor, diffuseIntensity, att, lv.dirToL, input.normal);
+    const float3 specular = Speculate(diffuseColor, diffuseIntensity, input.normal, lv.vToL, input.worldPos, att, SpecularPower);
     
-    //Diffise intensity
-    const float3 diffuse = DiffuseColor * DiffuseIntensity * att * max(0.0f, dot(dirToL, input.normal));
-    
-    //Reflected light vector
-    const float3 w = input.normal * dot(vToL, input.normal);
-    const float3 r = w * 2.0f - vToL;
-    
-    // calculate specular intensity based on angle between viewing vector and reflection vector, narrow with power function
-    const float3 specular = att * (DiffuseColor * DiffuseIntensity) * SpecularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(input.worldPos))), SpecularPower);
-    
-    //Final color
-    return float4(saturate((diffuse + Ambient) * tex.Sample(splr, input.tc).rgb + specular), 1.0f);
+    return float4(saturate((diffuse + ambient) * tex.Sample(splr, input.tc).rgb + specular), 1.0f);
 }

@@ -348,6 +348,11 @@
     <Image Include="models\nano_suit\glass_dif.png" />
     <Image Include="textures\brick.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\LightData.hlsli" />
+    <None Include="shaders\PointLight.hlsli" />
+    <None Include="shaders\ShaderUtils.hlsli" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

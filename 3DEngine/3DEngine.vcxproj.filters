@@ -296,4 +296,9 @@
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\ShaderUtils.hlsli" />
+    <None Include="shaders\LightData.hlsli" />
+    <None Include="shaders\PointLight.hlsli" />
+  </ItemGroup>
 </Project>

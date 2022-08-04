@@ -6,21 +6,21 @@ cbuffer CBuf
 
 struct VsIn
 {
-    float3 pos : POSITION;
-    float3 normal : NORMAL;
-    float3 tangent : TANGENT;
-    float3 bitan : BITANGENT;
-    float2 tc : TEXCOORD;
+    float3 pos      : POSITION;
+    float3 normal   : NORMAL;
+    float3 tangent  : TANGENT;
+    float3 bitan    : BITANGENT;
+    float2 tc       : TEXCOORD;
 };
 
 struct VsOut
 {
-    float3 viewPos : POSITION;
-    float3 normal : NORMAL;
-    float3 tangent : TANGENT;
-    float3 bitan : BITANGENT;
-    float2 tc : TEXCOORD;
-    float4 pos : SV_Position;
+    float3 viewPos  : POSITION;
+    float3 normal   : NORMAL;
+    float3 tangent  : TANGENT;
+    float3 bitan    : BITANGENT;
+    float2 tc       : TEXCOORD;
+    float4 pos      : SV_Position;
 };
 
 VsOut main(VsIn input)

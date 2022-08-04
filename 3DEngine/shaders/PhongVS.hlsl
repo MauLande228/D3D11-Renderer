@@ -6,18 +6,17 @@ cbuffer CBuf
 
 struct VsIn
 {
-    float3 pos : POSITION;
-    float3 normal : NORMAL;
-    float2 tc : TEXCOORD;
-    //float3 tangent : TANGENTU;
+    float3 pos      : POSITION;
+    float3 normal   : NORMAL;
+    float2 tc       : TEXCOORD;
 };
 
 struct VsOut
 {
     float3 worldPos : POSITION;
-    float3 normal : NORMAL;
-    float2 tc : TEXCOORD;
-    float4 pos : SV_Position;
+    float3 normal   : NORMAL;
+    float2 tc       : TEXCOORD;
+    float4 pos      : SV_Position;
 };
 
 VsOut main(VsIn input )

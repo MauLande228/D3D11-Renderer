@@ -1,32 +1,25 @@
-cbuffer LightCBuf
-{
-    float3 lightPos;
-    float3 ambient;
-    float3 diffuseColor;
-    float diffuseIntensity;
-    float attenuationConst;
-    float attenuationLin;
-    float attenuationQuad;
-};
+#include "ShaderUtils.hlsli"
+#include "LightData.hlsli"
+#include "PointLight.hlsli"
 
 cbuffer ObjectCBuf
 {
-    bool NormalMapEnabled;
-    bool specularMapEnabled;
-    bool hasGloss;
-    float specularPowerConst;
-    float3 specularColor;
-    float specularMapWeight;
+    bool    NormalMapEnabled;
+    bool    specularMapEnabled;
+    bool    hasGloss;
+    float   specularPowerConst;
+    float3  specularColor;
+    float   specularMapWeight;
 };
 
 struct PixelIn
 {
-    float3 viewPos : POSITION;
-    float3 normal : NORMAL;
-    float3 tangent : TANGENT;
-    float3 bitan : BITANGENT;
-    float2 tc : TEXCOORD;
-    float4 pos : SV_Position;
+    float3 viewPos  : POSITION;
+    float3 normal   : NORMAL;
+    float3 tangent  : TANGENT;
+    float3 bitan    : BITANGENT;
+    float2 tc       : TEXCOORD;
+    float4 pos      : SV_Position;
 };
 
 Texture2D tex;
@@ -37,39 +30,15 @@ SamplerState splr;
 
 float4 main(PixelIn input) : SV_TARGET
 {
-    if (NormalMapEnabled)
+    input.normal = normalize(input.normal);
+    if(NormalMapEnabled)
     {
-        // Build transform rotation into tangent space
-        const float3x3 tanToView = float3x3(
-            normalize(input.tangent),
-            normalize(input.bitan),
-            normalize(input.normal));
-        
-        // Unpack normal from map into tangent space
-        const float3 normalSample = nmap.Sample(splr, input.tc).xyz;
-        input.normal = normalSample * 2.0f - 1.0f;
-        
-        // Bring normal from taspace into view space
-        input.normal = mul(input.normal, tanToView);
-
+        input.normal = MapNormal(normalize(input.tangent), normalize(input.bitan), input.normal, input.tc, nmap, splr);
     }
     
-    //Fragment to Light vector data
-    const float3 vToL = lightPos - input.viewPos;
-    const float distToL = length(vToL);
-    const float3 dirToL = vToL / distToL;
+    // Fragment to light vector data
+    const LightVectorData lv = CalculateLightVectorData(viewLightPos, input.viewPos);
     
-    //Diffuse attenuation
-    const float att = 1.0f / (attenuationConst + attenuationLin * distToL + attenuationQuad * (distToL * distToL));
-    
-    //Diffise intensity
-    const float3 diffuse = diffuseColor * diffuseIntensity * att * max(0.0f, dot(dirToL, input.normal));
-    
-    //Reflected light vector
-    const float3 w = input.normal * dot(vToL, input.normal);
-    const float3 r = w * 2.0f - vToL;
-    
-    // calculate specular intensity based on angle between viewing vector and reflection vector, narrow with power function
     float3 specularReflectionColor;
     float specularPower = specularPowerConst;
     if(specularMapEnabled)
@@ -86,8 +55,17 @@ float4 main(PixelIn input) : SV_TARGET
         specularReflectionColor = specularColor;
     }
     
-    const float3 specular = att * (diffuseColor * diffuseIntensity) * pow(max(0.0f, dot(normalize(-r), normalize(input.viewPos))), specularPower);
+    const float att = Attenuate(attConst, attLin, attQuad, lv.distToL);
+    const float3 diffuse = Diffuse(diffuseColor, diffuseIntensity, att, lv.dirToL, input.normal);
+    const float3 specularReflected = Speculate(
+        specularReflectionColor,
+        1.0f,
+        input.normal,
+        lv.vToL,
+        input.viewPos,
+        att,
+        specularPower);
     
-    //Final color
-    return float4(saturate((diffuse + ambient) * tex.Sample(splr, input.tc).rgb + specular * specularReflectionColor), 1.0f);
+    // Final color = attenuate diffuse and ambient by diffuse texture color add specular reflected 
+    return float4(saturate((diffuse + ambient) * tex.Sample(splr, input.tc).rgb + specularReflected), 1.0f);
 }
