@@ -21,28 +21,38 @@ D3D11::Texture::Texture(D3D11Core& gfx, const std::string& filePath, unsigned in
 	D3D11_TEXTURE2D_DESC texDesc{};
 	texDesc.Width = width;
 	texDesc.Height = height;
-	texDesc.MipLevels = 1;
+	texDesc.MipLevels = 0;
 	texDesc.ArraySize = 1;
 	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	texDesc.SampleDesc.Count = 1;
 	texDesc.SampleDesc.Quality = 0;
 	texDesc.Usage = D3D11_USAGE_DEFAULT;
-	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	texDesc.CPUAccessFlags = 0;
-	texDesc.MiscFlags = 0;
+	texDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 	
-	D3D11_SUBRESOURCE_DATA sd{};
+	GFX_EXC(GetDevice(gfx)->CreateTexture2D(&texDesc, nullptr, &m_Texture));
+	
+	GetContext(gfx)->UpdateSubresource(
+		m_Texture.Get(),
+		0u,
+		nullptr,
+		imgBuffer,
+		width * 4,
+		0u);
+
+	/*D3D11_SUBRESOURCE_DATA sd{};
 	sd.pSysMem = imgBuffer;
-	sd.SysMemPitch = width * 4;
-	GFX_EXC(GetDevice(gfx)->CreateTexture2D(&texDesc, &sd, &m_Texture));
+	sd.SysMemPitch = width * 4;*/
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 	srvDesc.Format = texDesc.Format;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Texture2D.MipLevels = -1;
 	GFX_EXC(GetDevice(gfx)->CreateShaderResourceView(m_Texture.Get(), &srvDesc, &m_TextureView));
 	
+	GetContext(gfx)->GenerateMips(m_TextureView.Get());
 }
 
 void D3D11::Texture::Bind(D3D11Core& gfx) noexcept
