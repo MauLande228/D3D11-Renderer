@@ -13,7 +13,7 @@ namespace Engine
 	EngineApp::EngineApp() :
 		m_PointLight(m_Window.Gfx())
 	{
-		m_Window.Gfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 50.0f));
+		m_Window.Gfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 500.0f));
 	}
 
 	EngineApp::~EngineApp()
@@ -75,7 +75,9 @@ namespace Engine
 		m_Window.Gfx().SetCamera(m_Camera.GetMatrix());
 		m_PointLight.Bind(m_Window.Gfx(), m_Camera.GetMatrix());
 
-		gobber.Draw(m_Window.Gfx());
+		//nano.Draw(m_Window.Gfx());
+		//gobber.Draw(m_Window.Gfx());
+		Sponza.Draw(m_Window.Gfx());
 		m_PointLight.Draw(m_Window.Gfx());
 
 		while (const auto e = m_Window.m_KeyBoard.ReadKey())
@@ -130,7 +132,9 @@ namespace Engine
 			}
 		}
 
-		gobber.ShowWindow("Model 1");
+		//nano.ShowWindow("Nano suit");
+		//gobber.ShowWindow("Gobber");
+		Sponza.ShowWindow("Sponza");
 		m_Camera.SpawnControlWindow();
 		m_PointLight.SpawnControlWindow();
 

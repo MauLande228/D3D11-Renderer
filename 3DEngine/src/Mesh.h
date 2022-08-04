@@ -6,6 +6,7 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <filesystem>
 
 class Mesh : public Actor
 {
@@ -57,13 +58,18 @@ private:
 class Model
 {
 public:
-	Model(D3D11::D3D11Core& gfx, const std::string filePath);
+	Model(D3D11::D3D11Core& gfx, const std::string& pathString, const float scale);
 
 	void Draw(D3D11::D3D11Core& gfx) const;
 	void ShowWindow(const char* windowName = nullptr) noexcept;
 
 private:
-	static std::unique_ptr<Mesh> ParseMesh(D3D11::D3D11Core& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials);
+	static std::unique_ptr<Mesh> ParseMesh(
+		D3D11::D3D11Core& gfx,
+		const aiMesh& mesh,
+		const aiMaterial* const* pMaterials,
+		const std::filesystem::path& pathString,
+		float scale);
 	std::unique_ptr<Node> ParseNode(const aiNode& node);
 
 	struct

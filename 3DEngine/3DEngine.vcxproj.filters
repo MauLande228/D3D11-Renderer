@@ -287,6 +287,7 @@
     <FxCompile Include="shaders\PhongPSSpecNormalMap.hlsl" />
     <FxCompile Include="shaders\PhongVSNotex.hlsl" />
     <FxCompile Include="shaders\PhongPSNotex.hlsl" />
+    <FxCompile Include="shaders\PhongPSSpec.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\brick.png">
