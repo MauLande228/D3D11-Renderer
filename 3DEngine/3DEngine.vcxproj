@@ -152,6 +152,7 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="src\BaseGameObject.h" />
+    <ClInclude Include="src\Blender.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\DynamicVertex.h" />
     <ClInclude Include="src\Geometry.h" />
@@ -179,6 +180,7 @@
     <ClInclude Include="src\Primitives\PlaneGen.h" />
     <ClInclude Include="src\Primitives\Sphere.h" />
     <ClInclude Include="src\Primitives\SphereGen.h" />
+    <ClInclude Include="src\Rasterizer.h" />
     <ClInclude Include="src\ResourcePool.h" />
     <ClInclude Include="src\Sampler.h" />
     <ClInclude Include="src\stb_image.h" />
@@ -200,6 +202,7 @@
     <ClCompile Include="imgui\imgui_impl_win32.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Blender.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
     <ClCompile Include="src\ImGuiManager.cpp" />
@@ -218,6 +221,7 @@
     <ClCompile Include="src\Primitives\LightBulb.cpp" />
     <ClCompile Include="src\Primitives\Plane.cpp" />
     <ClCompile Include="src\Primitives\Sphere.cpp" />
+    <ClCompile Include="src\Rasterizer.cpp" />
     <ClCompile Include="src\Sampler.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
     <ClCompile Include="src\Texture.cpp" />
@@ -274,6 +278,12 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="shaders\PhongPSSpecNormalMap.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="shaders\PhongPSSpecNormalMask.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>

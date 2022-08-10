@@ -4,22 +4,22 @@
 
 cbuffer ObjectCBuf
 {
-    bool    NormalMapEnabled;
-    bool    specularMapEnabled;
-    bool    hasGloss;
-    float   specularPowerConst;
-    float3  specularColor;
-    float   specularMapWeight;
+    bool NormalMapEnabled;
+    bool specularMapEnabled;
+    bool hasGloss;
+    float specularPowerConst;
+    float3 specularColor;
+    float specularMapWeight;
 };
 
 struct PixelIn
 {
-    float3 viewPos  : POSITION;
-    float3 normal   : NORMAL;
-    float3 tangent  : TANGENT;
-    float3 bitan    : BITANGENT;
-    float2 tc       : TEXCOORD;
-    float4 pos      : SV_Position;
+    float3 viewPos : POSITION;
+    float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    float3 bitan : BITANGENT;
+    float2 tc : TEXCOORD;
+    float4 pos : SV_Position;
 };
 
 Texture2D tex;
@@ -32,8 +32,14 @@ float4 main(PixelIn input) : SV_TARGET
 {
     float4 dtex = tex.Sample(splr, input.tc);
     
+    clip(dtex.a < 0.1f ? -1 : 1);
+    if(dot(input.normal, input.viewPos) >= 0.0f)
+    {
+        input.normal = -input.normal;
+    }
+    
     input.normal = normalize(input.normal);
-    if(NormalMapEnabled)
+    if (NormalMapEnabled)
     {
         input.normal = MapNormal(normalize(input.tangent), normalize(input.bitan), input.normal, input.tc, nmap, splr);
     }
@@ -43,11 +49,11 @@ float4 main(PixelIn input) : SV_TARGET
     
     float3 specularReflectionColor;
     float specularPower = specularPowerConst;
-    if(specularMapEnabled)
+    if (specularMapEnabled)
     {
         const float4 specularSample = spec.Sample(splr, input.tc);
         specularReflectionColor = specularSample.rgb * specularMapWeight;
-        if(hasGloss)
+        if (hasGloss)
         {
             specularPower = pow(2.0f, specularSample.a * 13.0f);
         }

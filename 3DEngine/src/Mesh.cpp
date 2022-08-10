@@ -124,6 +124,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(
 	bool hasAlphaGloss = false;
 	bool hasNormalMap = false;
 	bool hasDiffuseMap = false;
+	bool hasAlphaDiffuse = false;
 	float shininess = 2.0f;
 	dx::XMFLOAT4 specularColor = { 0.18f,0.18f,0.18f,1.0f };
 	dx::XMFLOAT4 diffuseColor = { 0.45f,0.45f,0.85f,1.0f };
@@ -136,7 +137,9 @@ std::unique_ptr<Mesh> Model::ParseMesh(
 
 		if (material.GetTexture(aiTextureType_DIFFUSE, 0, &texFileName) == aiReturn_SUCCESS)
 		{
-			bindablePtrs.push_back(Texture::Resolve(gfx, rootPath + texFileName.C_Str()));
+			auto tex = Texture::Resolve(gfx, rootPath + texFileName.C_Str());
+			hasAlphaDiffuse = tex->HasAlpha();
+			bindablePtrs.push_back(std::move(tex));
 			hasDiffuseMap = true;
 		}
 		else
@@ -219,15 +222,17 @@ std::unique_ptr<Mesh> Model::ParseMesh(
 		auto pvsbc = pvs->GetByteCode();
 		bindablePtrs.push_back(std::move(pvs));
 
-		bindablePtrs.push_back(PixelShader::Resolve(gfx, "PhongPSSpecNormalMap.cso"));
+		bindablePtrs.push_back(PixelShader::Resolve(
+			gfx,
+			hasAlphaDiffuse ? "PhongPSSpecNormalMask.cso" : "PhongPSSpecNormalMap.cso"));
 
 		bindablePtrs.push_back(InputLayout::Resolve(gfx, vbuf.GetLayout(), pvsbc));
 
 		Node::PSMaterialConstantFullmonte pmc;
 		pmc.specularPower = shininess;
 		pmc.hasGlossMap = hasAlphaGloss ? TRUE : FALSE;
-		// this is CLEARLY an issue... all meshes will share same mat const, but may have different
-		// Ns (specular power) specified for each in the material properties... bad conflict
+
+		// All meshes will share same mat const, but may have different Ns (specular power) specified for each in the material properties
 		bindablePtrs.push_back(PixelConstantBuffer<Node::PSMaterialConstantFullmonte>::Resolve(gfx, pmc, 1u));
 	}
 	else if (hasDiffuseMap && hasNormalMap)
@@ -285,8 +290,7 @@ std::unique_ptr<Mesh> Model::ParseMesh(
 		pmc.specularPower = shininess;
 		pmc.specularIntensity = (specularColor.x + specularColor.y + specularColor.z) / 3.0f;
 		
-		//TODO: ISSUE all meshes will share same mat const, but may have different
-		// Ns (specular power) specified for each in the material properties... bad conflict
+		// All meshes will share same mat const, but may have different Ns (specular power) specified for each in the material properties
 		bindablePtrs.push_back(PixelConstantBuffer<PSMaterialConstantDiffnorm>::Resolve(gfx, pmc, 1u));
 	}
 	else if (hasDiffuseMap && !hasNormalMap && hasSpecularMap)
@@ -340,8 +344,8 @@ std::unique_ptr<Mesh> Model::ParseMesh(
 		pmc.specularPowerConst = shininess;
 		pmc.hasGloss = hasAlphaGloss ? TRUE : FALSE;
 		pmc.specularMapWeight = 1.0f;
-		// this is CLEARLY an issue... all meshes will share same mat const, but may have different
-		// Ns (specular power) specified for each in the material properties... bad conflict
+	
+		// All meshes will share same mat const, but may have different Ns (specular power) specified for each in the material properties
 		bindablePtrs.push_back(PixelConstantBuffer<PSMaterialConstantDiffuseSpec>::Resolve(gfx, pmc, 1u));
 	}
 	else if (hasDiffuseMap)
@@ -393,8 +397,8 @@ std::unique_ptr<Mesh> Model::ParseMesh(
 		} pmc;
 		pmc.specularPower = shininess;
 		pmc.specularIntensity = (specularColor.x + specularColor.y + specularColor.z) / 3.0f;
-		// this is CLEARLY an issue... all meshes will share same mat const, but may have different
-		// Ns (specular power) specified for each in the material properties... bad conflict
+		
+		// All meshes will share same mat const, but may have different Ns (specular power) specified for each in the material properties
 		bindablePtrs.push_back(PixelConstantBuffer<PSMaterialConstantDiffuse>::Resolve(gfx, pmc, 1u));
 	}
 	else if (!hasDiffuseMap && !hasNormalMap && !hasSpecularMap)
@@ -440,14 +444,17 @@ std::unique_ptr<Mesh> Model::ParseMesh(
 		pmc.specularPower = shininess;
 		pmc.specularColor = specularColor;
 		pmc.materialColor = diffuseColor;
-		// this is CLEARLY an issue... all meshes will share same mat const, but may have different
-		// Ns (specular power) specified for each in the material properties... bad conflict
+		
+		// All meshes will share same mat const, but may have different Ns (specular power) specified for each in the material properties
 		bindablePtrs.push_back(PixelConstantBuffer<Node::PSMaterialConstantNotex>::Resolve(gfx, pmc, 1u));
 	}
 	else
 	{
 		throw std::runtime_error("terrible combination of textures in material smh");
 	}
+
+	bindablePtrs.push_back(Rasterizer::Resolve(gfx, hasAlphaDiffuse));
+	bindablePtrs.push_back(Blender::Resolve(gfx, false));
 
 	return std::make_unique<Mesh>(gfx, std::move(bindablePtrs));
 }
