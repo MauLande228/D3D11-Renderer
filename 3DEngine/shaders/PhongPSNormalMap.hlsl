@@ -34,13 +34,13 @@ float4 main(PixelIn input) : SV_TARGET
     }
     
     // Fragment to light vector data
-    const LightVectorData lv = CalculateLightVectorData(viewLightPos, input.viewPos);
+    const LightVectorData lv = CalculateLightVectorData(lights.viewLightPos, input.viewPos);
     
-    const float att = Attenuate(attConst, attLin, attQuad, lv.distToL);
-    const float3 diffuse = Diffuse(diffuseColor, diffuseIntensity, att, lv.dirToL, input.normal);
+    const float att = Attenuate(lights.attConst, lights.attLin, lights.attQuad, lv.distToL);
+    const float3 diffuse = Diffuse(lights.diffuseColor, lights.diffuseIntensity, att, lv.dirToL, input.normal);
     const float3 specular = Speculate(
-        diffuseColor,
-        diffuseIntensity,
+        lights.diffuseColor,
+        lights.diffuseIntensity,
         input.normal,
         lv.vToL,
         input.viewPos,
@@ -48,5 +48,5 @@ float4 main(PixelIn input) : SV_TARGET
         SpecularPower);
     
     // Final color
-    return float4(saturate((diffuse + ambient) * tex.Sample(splr, input.tc).rgb + specular), 1.0f);
+    return float4(saturate((diffuse + lights.ambient) * tex.Sample(splr, input.tc).rgb + specular), 1.0f);
 }

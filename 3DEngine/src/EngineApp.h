@@ -33,7 +33,7 @@ namespace Engine
 		~EngineApp();
 
 		void Draw(float dt);
-		void ShowModelWindow();
+		void BindSceneLights();
 
 	private:
 		ImGuiManager m_ImGui{};
@@ -43,9 +43,17 @@ namespace Engine
 		Timer	m_Timer{};
 
 		PointLight m_PointLight;
+		//PointLight m_PointLight1;
 
 		//Model nano{ m_Window.Gfx(), "models/nano_textured/nanosuit.obj", 2.0f };
 		//Model gobber{ m_Window.Gfx(), "models/gobber/GoblinX.obj", 6.0f };
 		Model Sponza{ m_Window.Gfx(), "models/Sponza/sponza.obj", 1.0f / 20.0f };
+
+		struct PointLights
+		{
+			PointLightCB lights;
+		}PL;
+
+		mutable D3D11::PixelConstantBuffer<PointLights> m_CBuffer;
 	};
 }

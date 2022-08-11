@@ -11,7 +11,9 @@
 namespace Engine
 {
 	EngineApp::EngineApp() :
-		m_PointLight(m_Window.Gfx())
+		m_PointLight(m_Window.Gfx()),
+		m_CBuffer(m_Window.Gfx())
+		//m_PointLight1(m_Window.Gfx())
 	{
 		m_Window.Gfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 500.0f));
 	}
@@ -73,12 +75,15 @@ namespace Engine
 	{
 		m_Window.Gfx().BeginFrame(DirectX::Colors::Black);
 		m_Window.Gfx().SetCamera(m_Camera.GetMatrix());
-		m_PointLight.Bind(m_Window.Gfx(), m_Camera.GetMatrix());
+		BindSceneLights();
+		//m_PointLight.Bind(m_Window.Gfx(), m_Camera.GetMatrix());
+		//m_PointLight1.Bind(m_Window.Gfx(), m_Camera.GetMatrix());
 
 		//nano.Draw(m_Window.Gfx());
 		//gobber.Draw(m_Window.Gfx());
 		Sponza.Draw(m_Window.Gfx());
 		m_PointLight.Draw(m_Window.Gfx());
+		//m_PointLight1.Draw(m_Window.Gfx());
 
 		while (const auto e = m_Window.m_KeyBoard.ReadKey())
 		{
@@ -137,7 +142,18 @@ namespace Engine
 		Sponza.ShowWindow("Sponza");
 		m_Camera.SpawnControlWindow();
 		m_PointLight.SpawnControlWindow();
+		//m_PointLight1.SpawnControlWindow();
 
 		m_Window.Gfx().EndFrame();
+	}
+	void EngineApp::BindSceneLights()
+	{
+		auto data = m_PointLight.GetData();
+		auto poscopy = m_PointLight.GetData().Pos;
+		const auto pos = DirectX::XMLoadFloat3(&poscopy);
+		DirectX::XMStoreFloat3(&data.Pos, DirectX::XMVector3Transform(pos, m_Camera.GetMatrix()));
+		PL.lights = data;
+		m_CBuffer.Update(m_Window.Gfx(), PL);
+		m_CBuffer.Bind(m_Window.Gfx());
 	}
 }

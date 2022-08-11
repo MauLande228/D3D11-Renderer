@@ -25,11 +25,11 @@ float4 main(VsOut input) : SV_TARGET
     input.normal = normalize(input.normal);
     
 	//Fragment to Light vector data
-    const LightVectorData lv = CalculateLightVectorData(viewLightPos, input.worldPos);
+    const LightVectorData lv = CalculateLightVectorData(lights.viewLightPos, input.worldPos);
     
-    const float att = Attenuate(attConst, attLin, attQuad, lv.distToL);
-    const float3 diffuse = Diffuse(diffuseColor, diffuseIntensity, att, lv.dirToL, input.normal);
-    const float3 specular = Speculate(diffuseColor, diffuseIntensity, input.normal, lv.vToL, input.worldPos, att, SpecularPower);
+    const float att = Attenuate(lights.attConst, lights.attLin, lights.attQuad, lv.distToL);
+    const float3 diffuse = Diffuse(lights.diffuseColor, lights.diffuseIntensity, att, lv.dirToL, input.normal);
+    const float3 specular = Speculate(lights.diffuseColor, lights.diffuseIntensity, input.normal, lv.vToL, input.worldPos, att, SpecularPower);
     
-    return float4(saturate((diffuse + ambient) * tex.Sample(splr, input.tc).rgb + specular), 1.0f);
+    return float4(saturate((diffuse + lights.ambient) * tex.Sample(splr, input.tc).rgb + specular), 1.0f);
 }

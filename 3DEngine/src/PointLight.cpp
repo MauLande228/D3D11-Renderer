@@ -23,6 +23,11 @@ void PointLight::Bind(D3D11::D3D11Core& gfx, DirectX::FXMMATRIX view) const noex
 	m_CBuffer.Bind(gfx);
 }
 
+PointLightCB PointLight::GetData() const noexcept
+{
+	return m_Data;
+}
+
 void PointLight::SpawnControlWindow() noexcept
 {
 	if (ImGui::Begin("Light"))

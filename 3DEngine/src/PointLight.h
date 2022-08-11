@@ -4,6 +4,17 @@
 #include "Primitives/LightBulb.h"
 #include "ConstantBuffers.h"
 
+struct PointLightCB
+{
+	alignas(16)DirectX::XMFLOAT3 Pos;
+	alignas(16)DirectX::XMFLOAT3 Ambient;
+	alignas(16)DirectX::XMFLOAT3 DiffuseColor;
+	float DiffuseIntensity;
+	float AttConst;
+	float AttLin;
+	float AttQuad;
+};
+
 class PointLight
 {
 public:
@@ -13,20 +24,10 @@ public:
 	void Draw(D3D11::D3D11Core& gfx) const NOXND;
 	void Bind(D3D11::D3D11Core& gfx, DirectX::FXMMATRIX view) const noexcept;
 
+	PointLightCB GetData() const noexcept;
+
 	void SpawnControlWindow() noexcept;
 	void Reset() noexcept;
-
-private:
-	struct PointLightCB
-	{
-		alignas(16)DirectX::XMFLOAT3 Pos;
-		alignas(16)DirectX::XMFLOAT3 Ambient;
-		alignas(16)DirectX::XMFLOAT3 DiffuseColor;
-		float DiffuseIntensity;
-		float AttConst;
-		float AttLin;
-		float AttQuad;
-	};
 
 private:
 	PointLightCB m_Data;
