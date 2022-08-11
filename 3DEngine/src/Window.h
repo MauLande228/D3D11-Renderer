@@ -58,8 +58,6 @@ public:
 	WindowExtent GetWindowExtent() const;
 	HWND GetHwnd()const { return m_HWnd; }
 
-	void SetFullScreen(bool fullScreen);
-
 	static std::optional<int> ProcessMessages() noexcept;
 	D3D11::D3D11Core& Gfx();
 
@@ -85,7 +83,6 @@ private:
 	HWND				m_HWnd;
 	std::wstring		m_WndTitle;
 	RECT				m_WindowRect;
-	bool				m_Fullscreen;
 	bool				m_CursorEnabled = false;
 	std::vector<BYTE>	m_RawBuffer;
 

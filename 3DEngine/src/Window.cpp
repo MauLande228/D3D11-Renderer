@@ -106,58 +106,6 @@ WindowExtent Window::GetWindowExtent() const
 	return we;
 }
 
-void Window::SetFullScreen(bool fullscreen)
-{
-	if (m_Fullscreen != fullscreen)
-	{
-		m_Fullscreen = fullscreen;
-
-		if (m_Fullscreen) // Switching to fullscreen.
-		{
-			// Store the current window dimensions so they can be restored 
-			// when switching out of fullscreen state.
-			::GetWindowRect(m_HWnd, &m_WindowRect);
-
-			// Set the window style to a borderless window so the client area fills
-			// the entire screen.
-			UINT windowStyle = WS_OVERLAPPEDWINDOW & ~(WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
-
-			::SetWindowLongW(m_HWnd, GWL_STYLE, windowStyle);
-
-			// Query the name of the nearest display device for the window.
-			// This is required to set the fullscreen dimensions of the window
-			// when using a multi-monitor setup.
-			HMONITOR hMonitor = ::MonitorFromWindow(m_HWnd, MONITOR_DEFAULTTONEAREST);
-			MONITORINFOEX monitorInfo = {};
-			monitorInfo.cbSize = sizeof(MONITORINFOEX);
-			::GetMonitorInfo(hMonitor, &monitorInfo);
-
-			::SetWindowPos(m_HWnd, HWND_TOPMOST,
-				monitorInfo.rcMonitor.left,
-				monitorInfo.rcMonitor.top,
-				monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left,
-				monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top,
-				SWP_FRAMECHANGED | SWP_NOACTIVATE);
-
-			::ShowWindow(m_HWnd, SW_MAXIMIZE);
-		}
-		else
-		{
-			// Restore all the window decorators.
-			::SetWindowLong(m_HWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
-
-			::SetWindowPos(m_HWnd, HWND_NOTOPMOST,
-				m_WindowRect.left,
-				m_WindowRect.top,
-				m_WindowRect.right - m_WindowRect.left,
-				m_WindowRect.bottom - m_WindowRect.top,
-				SWP_FRAMECHANGED | SWP_NOACTIVATE);
-
-			::ShowWindow(m_HWnd, SW_NORMAL);
-		}
-	}
-}
-
 std::optional<int> Window::ProcessMessages() noexcept
 {
 	MSG msg;

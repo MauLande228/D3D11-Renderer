@@ -11,13 +11,8 @@
 namespace Engine
 {
 	EngineApp::EngineApp() :
-		//m_PointLight(m_Window.Gfx()),
 		m_CBuffer(m_Window.Gfx())
-		//m_PointLight1(m_Window.Gfx()),
 	{
-		//m_Lights.push_back(std::move(m_PointLight));
-		//m_Lights.push_back(std::move(m_PointLight1));
-
 		m_Window.Gfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 500.0f));
 	}
 
@@ -40,6 +35,7 @@ namespace Engine
 			{
 				CalculateFrameStats();
 				Draw(m_Timer.DeltaTime());
+				ProcessInput(m_Timer.DeltaTime());
 			}
 			else
 			{
@@ -79,19 +75,29 @@ namespace Engine
 		m_Window.Gfx().BeginFrame(DirectX::Colors::Black);
 		m_Window.Gfx().SetCamera(m_Camera.GetMatrix());
 		BindSceneLights();
-		//m_PointLight.Bind(m_Window.Gfx(), m_Camera.GetMatrix());
-		//m_PointLight1.Bind(m_Window.Gfx(), m_Camera.GetMatrix());
 
 		//nano.Draw(m_Window.Gfx());
 		//gobber.Draw(m_Window.Gfx());
 		Sponza.Draw(m_Window.Gfx());
-		//m_PointLight.Draw(m_Window.Gfx());
-		//m_PointLight1.Draw(m_Window.Gfx());
+		
 		for (unsigned int i = 0; i < 2; i++)
 		{
 			m_Lights[i].Draw(m_Window.Gfx());
 		}
 
+		//nano.ShowWindow("Nano suit");
+		//gobber.ShowWindow("Gobber");
+		Sponza.ShowWindow("Sponza");
+		m_Camera.SpawnControlWindow();
+		
+		m_Lights[0].SpawnControlWindow("Light 1");
+		m_Lights[1].SpawnControlWindow("Light 2");
+
+		m_Window.Gfx().EndFrame();
+	}
+
+	void EngineApp::ProcessInput(float dt)
+	{
 		while (const auto e = m_Window.m_KeyBoard.ReadKey())
 		{
 			if (e->IsPress() && e->GetCode() == VK_ESCAPE)
@@ -143,22 +149,8 @@ namespace Engine
 				m_Camera.Rotate((float)delta->x, (float)delta->y);
 			}
 		}
-
-		//nano.ShowWindow("Nano suit");
-		//gobber.ShowWindow("Gobber");
-		Sponza.ShowWindow("Sponza");
-		m_Camera.SpawnControlWindow();
-		//m_PointLight.SpawnControlWindow();
-		//m_PointLight1.SpawnControlWindow();
-		/*for (unsigned int i = 0; i < 2; i++)
-		{
-			m_Lights[i].SpawnControlWindow();
-		}*/
-		m_Lights[0].SpawnControlWindow("Light 1");
-		m_Lights[1].SpawnControlWindow("Light 2");
-
-		m_Window.Gfx().EndFrame();
 	}
+
 	void EngineApp::BindSceneLights()
 	{
 		for (unsigned int i = 0; i < 2; i++)

@@ -33,18 +33,16 @@ namespace Engine
 		~EngineApp();
 
 		void Draw(float dt);
+		void ProcessInput(float dt);
 		void BindSceneLights();
 
 	private:
 		ImGuiManager m_ImGui{};
 
-		Window	m_Window{ 1280, 720, L"D3D12 Renderer" };
+		Window	m_Window{ 1280, 720, L"D3D11 Renderer" };
 		Camera	m_Camera{};
 		Timer	m_Timer{};
-
-		PointLight m_PointLight{ m_Window.Gfx() };
-		PointLight m_PointLight1{ m_Window.Gfx() };
-		//std::vector<PointLight> m_Lights;
+		
 		PointLight m_Lights[2] = { PointLight{m_Window.Gfx()}, PointLight{m_Window.Gfx()} };
 
 		//Model nano{ m_Window.Gfx(), "models/nano_textured/nanosuit.obj", 2.0f };
