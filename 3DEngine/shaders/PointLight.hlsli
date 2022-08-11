@@ -22,5 +22,5 @@ struct PointLightCB
 
 cbuffer PointLight
 {
-    PointLightCB lights;
+    PointLightCB lights[2];
 };

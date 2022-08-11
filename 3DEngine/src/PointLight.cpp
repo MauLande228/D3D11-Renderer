@@ -28,9 +28,9 @@ PointLightCB PointLight::GetData() const noexcept
 	return m_Data;
 }
 
-void PointLight::SpawnControlWindow() noexcept
+void PointLight::SpawnControlWindow(const char* wndName) noexcept
 {
-	if (ImGui::Begin("Light"))
+	if (ImGui::Begin(wndName))
 	{
 		ImGui::Text("Position");
 		ImGui::SliderFloat("X", &m_Data.Pos.x, -60.0f, 60.0f, "%.1f");

@@ -38,28 +38,31 @@ float4 main(PixelIn input) : SV_TARGET
         input.normal = MapNormal(normalize(input.tangent), normalize(input.bitan), input.normal, input.tc, nmap, splr);
     }
     
-    // Fragment to light vector data
-    const LightVectorData lv = CalculateLightVectorData(lights.viewLightPos, input.viewPos);
-    
-    float3 specularReflectionColor;
-    float specularPower = specularPowerConst;
-    if(specularMapEnabled)
+    float4 fragmentOutput = { 0, 0, 0, 0 };
+    for (unsigned int i = 0; i < 2; i++)
     {
-        const float4 specularSample = spec.Sample(splr, input.tc);
-        specularReflectionColor = specularSample.rgb * specularMapWeight;
-        if(hasGloss)
+        // Fragment to light vector data
+        const LightVectorData lv = CalculateLightVectorData(lights[i].viewLightPos, input.viewPos);
+    
+        float3 specularReflectionColor;
+        float specularPower = specularPowerConst;
+        if (specularMapEnabled)
         {
-            specularPower = pow(2.0f, specularSample.a * 13.0f);
+            const float4 specularSample = spec.Sample(splr, input.tc);
+            specularReflectionColor = specularSample.rgb * specularMapWeight;
+            if (hasGloss)
+            {
+                specularPower = pow(2.0f, specularSample.a * 13.0f);
+            }
         }
-    }
-    else
-    {
-        specularReflectionColor = specularColor;
-    }
+        else
+        {
+            specularReflectionColor = specularColor;
+        }
     
-    const float att = Attenuate(lights.attConst, lights.attLin, lights.attQuad, lv.distToL);
-    const float3 diffuse = Diffuse(lights.diffuseColor, lights.diffuseIntensity, att, lv.dirToL, input.normal);
-    const float3 specularReflected = Speculate(
+        const float att = Attenuate(lights[i].attConst, lights[i].attLin, lights[i].attQuad, lv.distToL);
+        const float3 diffuse = Diffuse(lights[i].diffuseColor, lights[i].diffuseIntensity, att, lv.dirToL, input.normal);
+        const float3 specularReflected = Speculate(
         specularReflectionColor,
         1.0f,
         input.normal,
@@ -67,7 +70,10 @@ float4 main(PixelIn input) : SV_TARGET
         input.viewPos,
         att,
         specularPower);
+        
+        fragmentOutput += float4(saturate((diffuse + lights[i].ambient) * dtex.rgb + specularReflected), dtex.a);
+    }
     
     // Final color = attenuate diffuse and ambient by diffuse texture color add specular reflected 
-    return float4(saturate((diffuse + lights.ambient) * dtex.rgb + specularReflected), dtex.a);
+    return fragmentOutput;
 }

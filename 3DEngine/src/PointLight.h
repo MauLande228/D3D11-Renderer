@@ -26,7 +26,7 @@ public:
 
 	PointLightCB GetData() const noexcept;
 
-	void SpawnControlWindow() noexcept;
+	void SpawnControlWindow(const char* wndName) noexcept;
 	void Reset() noexcept;
 
 private:

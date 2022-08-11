@@ -42,8 +42,10 @@ namespace Engine
 		Camera	m_Camera{};
 		Timer	m_Timer{};
 
-		PointLight m_PointLight;
-		//PointLight m_PointLight1;
+		PointLight m_PointLight{ m_Window.Gfx() };
+		PointLight m_PointLight1{ m_Window.Gfx() };
+		//std::vector<PointLight> m_Lights;
+		PointLight m_Lights[2] = { PointLight{m_Window.Gfx()}, PointLight{m_Window.Gfx()} };
 
 		//Model nano{ m_Window.Gfx(), "models/nano_textured/nanosuit.obj", 2.0f };
 		//Model gobber{ m_Window.Gfx(), "models/gobber/GoblinX.obj", 6.0f };
@@ -51,7 +53,7 @@ namespace Engine
 
 		struct PointLights
 		{
-			PointLightCB lights;
+			PointLightCB lights[2];
 		}PL;
 
 		mutable D3D11::PixelConstantBuffer<PointLights> m_CBuffer;

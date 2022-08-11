@@ -11,10 +11,13 @@
 namespace Engine
 {
 	EngineApp::EngineApp() :
-		m_PointLight(m_Window.Gfx()),
+		//m_PointLight(m_Window.Gfx()),
 		m_CBuffer(m_Window.Gfx())
-		//m_PointLight1(m_Window.Gfx())
+		//m_PointLight1(m_Window.Gfx()),
 	{
+		//m_Lights.push_back(std::move(m_PointLight));
+		//m_Lights.push_back(std::move(m_PointLight1));
+
 		m_Window.Gfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 9.0f / 16.0f, 0.5f, 500.0f));
 	}
 
@@ -82,8 +85,12 @@ namespace Engine
 		//nano.Draw(m_Window.Gfx());
 		//gobber.Draw(m_Window.Gfx());
 		Sponza.Draw(m_Window.Gfx());
-		m_PointLight.Draw(m_Window.Gfx());
+		//m_PointLight.Draw(m_Window.Gfx());
 		//m_PointLight1.Draw(m_Window.Gfx());
+		for (unsigned int i = 0; i < 2; i++)
+		{
+			m_Lights[i].Draw(m_Window.Gfx());
+		}
 
 		while (const auto e = m_Window.m_KeyBoard.ReadKey())
 		{
@@ -141,18 +148,28 @@ namespace Engine
 		//gobber.ShowWindow("Gobber");
 		Sponza.ShowWindow("Sponza");
 		m_Camera.SpawnControlWindow();
-		m_PointLight.SpawnControlWindow();
+		//m_PointLight.SpawnControlWindow();
 		//m_PointLight1.SpawnControlWindow();
+		/*for (unsigned int i = 0; i < 2; i++)
+		{
+			m_Lights[i].SpawnControlWindow();
+		}*/
+		m_Lights[0].SpawnControlWindow("Light 1");
+		m_Lights[1].SpawnControlWindow("Light 2");
 
 		m_Window.Gfx().EndFrame();
 	}
 	void EngineApp::BindSceneLights()
 	{
-		auto data = m_PointLight.GetData();
-		auto poscopy = m_PointLight.GetData().Pos;
-		const auto pos = DirectX::XMLoadFloat3(&poscopy);
-		DirectX::XMStoreFloat3(&data.Pos, DirectX::XMVector3Transform(pos, m_Camera.GetMatrix()));
-		PL.lights = data;
+		for (unsigned int i = 0; i < 2; i++)
+		{
+			auto data = m_Lights[i].GetData();
+			auto poscopy = m_Lights[i].GetData().Pos;
+			const auto pos = DirectX::XMLoadFloat3(&poscopy);
+			DirectX::XMStoreFloat3(&data.Pos, DirectX::XMVector3Transform(pos, m_Camera.GetMatrix()));
+			PL.lights[i] = data;
+		}
+
 		m_CBuffer.Update(m_Window.Gfx(), PL);
 		m_CBuffer.Bind(m_Window.Gfx());
 	}
