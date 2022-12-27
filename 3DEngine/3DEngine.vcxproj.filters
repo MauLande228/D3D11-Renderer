@@ -165,6 +165,12 @@
     <ClInclude Include="src\Rasterizer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Primitives\GeosphereGen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PBRTransform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Window.cpp">
@@ -281,6 +287,9 @@
     <ClCompile Include="src\Rasterizer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\PBRTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="shaders\VertexShader.hlsl" />
@@ -301,6 +310,8 @@
     <FxCompile Include="shaders\PhongPSNotex.hlsl" />
     <FxCompile Include="shaders\PhongPSSpec.hlsl" />
     <FxCompile Include="shaders\PhongPSSpecNormalMask.hlsl" />
+    <FxCompile Include="shaders\PBR_vs.hlsl" />
+    <FxCompile Include="shaders\PBR_ps.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\brick.png">

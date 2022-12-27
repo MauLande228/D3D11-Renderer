@@ -4,6 +4,7 @@
 #include "ConstantBuffers.h"
 #include "IndexBuffer.h"
 #include "InputLayout.h"
+#include "PBRTransform.h"
 #include "PixelShader.h"
 #include "Rasterizer.h"
 #include "Sampler.h"

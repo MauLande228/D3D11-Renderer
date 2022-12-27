@@ -47,7 +47,9 @@ namespace Engine
 
 		//Model nano{ m_Window.Gfx(), "models/nano_textured/nanosuit.obj", 2.0f };
 		//Model gobber{ m_Window.Gfx(), "models/gobber/GoblinX.obj", 6.0f };
-		Model Sponza{ m_Window.Gfx(), "models/Sponza/sponza.obj", 1.0f / 20.0f };
+		//Model Sponza{ m_Window.Gfx(), "models/Sponza/sponza.obj", 1.0f / 20.0f };
+
+		Sphere sphere{ m_Window.Gfx(), m_Camera, 1.0f };
 
 		struct PointLights
 		{

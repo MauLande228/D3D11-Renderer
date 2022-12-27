@@ -1,55 +1,56 @@
-/*#include "Sphere.h"
+#include "Sphere.h"
+#include "SphereGen.h"
+#include "GeosphereGen.h"
 #include "../BindableBase.h"
 
 using namespace D3D11;
 
-Sphere::Sphere(D3D11Core& gfx,
-	std::mt19937& rng,
-	std::uniform_real_distribution<float>& adist,
-	std::uniform_real_distribution<float>& ddist,
-	std::uniform_real_distribution<float>& odist,
-	std::uniform_real_distribution<float>& rdist,
-	DirectX::XMFLOAT3 material)
-	:
-	BaseGameObject(gfx, rng, adist, ddist, odist, rdist)
+Sphere::Sphere(D3D11::D3D11Core& gfx, Camera& camera, float radius)
 {
-	if (!IsStaticInitialized())
+	auto model = GeosphereGen::Make();
+	//auto model = m_GeoGen.CreateSphere(radius, 10, 10);
+	model.Transform(DirectX::XMMatrixScaling(radius, radius, radius));
+	const auto geometryTag = "$spherePBR." + std::to_string(radius);
+	AddBind(VertexBuffer::Resolve(gfx, geometryTag, model.vertices));
+	AddBind(IndexBuffer::Resolve(gfx, geometryTag, model.indices));
+
+	auto pvs = VertexShader::Resolve(gfx, "PBR_vs.cso");
+	auto pvsbc = pvs->GetByteCode();
+	AddBind(std::move(pvs));
+
+	AddBind(PixelShader::Resolve(gfx, "PBR_ps.cso"));
+
+	AddBind(Texture::Resolve(gfx, "textures/PBR/rustediron2_basecolor.png"));
+	AddBind(Texture::Resolve(gfx, "textures/PBR/rustediron2_metallic.png", 1));
+	AddBind(Texture::Resolve(gfx, "textures/PBR/rustediron2_normal.png", 2));
+	AddBind(Texture::Resolve(gfx, "textures/PBR/rustediron2_roughness.png", 3));
+
+	AddBind(Sampler::Resolve(gfx));
+
+	struct PSColorConstant
 	{
-		auto geo = m_GeoGen.CreateSphere(1.5, 30, 30);
-		AddStaticBind(std::make_unique<VertexBuffer>(gfx, geo.Vertices));
+		DirectX::XMFLOAT3 color = { 0.0f,1.0f,0.0f };
+		float padding;
+	} colorConst;
+	//AddBind(PixelConstantBuffer<PSColorConstant>::Resolve(gfx, colorConst, 1));
 
-		auto pvs = std::make_unique<VertexShader>(gfx, L"PhongVS.cso");
-		auto pvsbc = pvs->GetByteCode();
-		AddStaticBind(std::move(pvs));
+	AddBind(InputLayout::Resolve(gfx, model.vertices.GetLayout(), pvsbc));
 
-		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PhongPS.cso"));
+	AddBind(Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
-		auto ib = std::make_unique<IndexBuffer>(gfx, geo.GetIndices16());
-		AddStaticIndexBuffer(std::move(ib));
+	AddBind(std::make_shared<PBRTransform>(gfx, *this, camera));
+}
 
-		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
-		{
-			{ "POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },
-			{ "NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0 },
-			{ "TANGENTU",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0 },
-			{ "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA,0 }
-		};
-		AddStaticBind(std::make_unique<InputLayout>(gfx, ied, pvsbc));
+void Sphere::SetPosition(DirectX::XMFLOAT3 pos) noexcept
+{
+	m_Position = pos;
+}
 
-		AddStaticBind(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-	}
-	else
-	{
-		SetIndexFromStatic();
-	}
-
-	AddBind(std::make_unique<Transform>(gfx, *this));
-
-	MaterialConstants.color = material;
-	AddBind(std::make_unique<PixelConstantBuffer<PSMaterialConstant>>(gfx, MaterialConstants, 1u));
+void Sphere::UpdateCB(Camera& camera) noexcept
+{
 }
 
 DirectX::XMMATRIX Sphere::GetTransform() const noexcept
 {
-	return DirectX::XMLoadFloat4x4(&m_Transform) * BaseGameObject::GetTransform();
-}*/
+	return DirectX::XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
+}

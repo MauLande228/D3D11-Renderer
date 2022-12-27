@@ -1,34 +1,25 @@
 #pragma once
 
-/*#include "../ActorBase.h"
+#include "../Actor.h"
 #include "../Geometry.h"
-#include "../BaseGameObject.h"
-#include "../Math.h"
+#include "../Camera.h"
 
-class Sphere : public BaseGameObject<Sphere>
+struct CameraCB
+{
+	DirectX::XMFLOAT3 CamPos;
+};
+
+class Sphere : public Actor
 {
 public:
-	Sphere(
-		D3D11::D3D11Core& gfx,
-		std::mt19937& rng,
-		std::uniform_real_distribution<float>& adist,
-		std::uniform_real_distribution<float>& ddist,
-		std::uniform_real_distribution<float>& odist,
-		std::uniform_real_distribution<float>& rdist,
-		DirectX::XMFLOAT3 material);
+	Sphere(D3D11::D3D11Core& gfx, Camera& camera, float radius);
 
+	void SetPosition(DirectX::XMFLOAT3 pos) noexcept;
+	void UpdateCB(Camera& camera) noexcept;
 	DirectX::XMMATRIX GetTransform() const noexcept override;
 
 private:
-	struct PSMaterialConstant
-	{
-		DirectX::XMFLOAT3 color;
-		float specularIntensity = 0.6f;
-		float specularPower = 30.0f;
-		float padding[3];
-	} MaterialConstants;
-
-private:
-	DirectX::XMFLOAT4X4 m_Transform = Math::Identity4x4();
+	DirectX::XMFLOAT3	m_Position = { 1.0f, 1.0f, 1.0f };
 	Geometry			m_GeoGen;
-};*/
+	CameraCB			m_CameraCB;
+};

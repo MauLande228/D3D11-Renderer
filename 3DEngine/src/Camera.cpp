@@ -47,6 +47,11 @@ void Camera::Translate(DirectX::XMFLOAT3 translation) noexcept
 	};
 }
 
+DirectX::XMFLOAT3 Camera::GetPosition() const noexcept
+{
+	return m_Pos;
+}
+
 void Camera::SpawnControlWindow() noexcept
 {
 	if (ImGui::Begin("Camera"))

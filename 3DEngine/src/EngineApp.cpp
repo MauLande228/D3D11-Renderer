@@ -78,8 +78,9 @@ namespace Engine
 
 		//nano.Draw(m_Window.Gfx());
 		//gobber.Draw(m_Window.Gfx());
-		Sponza.Draw(m_Window.Gfx());
-		
+		//Sponza.Draw(m_Window.Gfx());
+		sphere.Draw(m_Window.Gfx());
+
 		for (unsigned int i = 0; i < 2; i++)
 		{
 			m_Lights[i].Draw(m_Window.Gfx());
@@ -87,7 +88,7 @@ namespace Engine
 
 		//nano.ShowWindow("Nano suit");
 		//gobber.ShowWindow("Gobber");
-		Sponza.ShowWindow("Sponza");
+		//Sponza.ShowWindow("Sponza");
 		m_Camera.SpawnControlWindow();
 		
 		m_Lights[0].SpawnControlWindow("Light 1");
